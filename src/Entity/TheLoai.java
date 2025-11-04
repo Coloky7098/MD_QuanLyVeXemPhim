@@ -3,18 +3,16 @@ package Entity;
 public class TheLoai {
 	private Integer maTheLoai;
     private String tenTheLoai;
-    private String img;
     private String moTa;
     
 	public TheLoai() {
 		super();
 	}
 
-	public TheLoai(Integer maTheLoai, String tenTheLoai, String img, String moTa) {
+	public TheLoai(Integer maTheLoai, String tenTheLoai, String moTa) {
 		super();
 		this.maTheLoai = maTheLoai;
 		this.tenTheLoai = tenTheLoai;
-		this.img = img;
 		this.moTa = moTa;
 	}
 
@@ -32,14 +30,6 @@ public class TheLoai {
 
 	public void setTenTheLoai(String tenTheLoai) {
 		this.tenTheLoai = tenTheLoai;
-	}
-
-	public String getImg() {
-		return img;
-	}
-
-	public void setImg(String img) {
-		this.img = img;
 	}
 
 	public String getMoTa() {

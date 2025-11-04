@@ -12,14 +12,12 @@ public class Phim {
     private Integer thoiLuong;
     private String daoDien;
     private LocalDate ngayKhoiChieu;
-    private String dienVien;
     private String img;
     private TheLoai theLoai; // Quan hệ
     private List<SuatChieu> suatChieus;
     
 	public Phim(Integer maPhim, String tenPhim, String moTa, String doTuoi, String quocGia, Integer thoiLuong,
-			String daoDien, LocalDate ngayKhoiChieu, String dienVien, String img, TheLoai theLoai,
-			List<SuatChieu> suatChieus) {
+			String daoDien, LocalDate ngayKhoiChieu, String img, TheLoai theLoai) {
 		super();
 		this.maPhim = maPhim;
 		this.tenPhim = tenPhim;
@@ -29,10 +27,8 @@ public class Phim {
 		this.thoiLuong = thoiLuong;
 		this.daoDien = daoDien;
 		this.ngayKhoiChieu = ngayKhoiChieu;
-		this.dienVien = dienVien;
 		this.img = img;
 		this.theLoai = theLoai;
-		this.suatChieus = suatChieus;
 	}
     
 	public Phim() {
@@ -101,14 +97,6 @@ public class Phim {
 
 	public void setNgayKhoiChieu(LocalDate ngayKhoiChieu) {
 		this.ngayKhoiChieu = ngayKhoiChieu;
-	}
-
-	public String getDienVien() {
-		return dienVien;
-	}
-
-	public void setDienVien(String dienVien) {
-		this.dienVien = dienVien;
 	}
 
 	public String getImg() {
