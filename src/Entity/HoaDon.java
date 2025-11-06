@@ -8,18 +8,24 @@ public class HoaDon {
     private LocalDateTime ngayLapHoaDon;
     private KhachHang khachHang; // Quan hệ
     private NhanVien nhanVien; // Quan hệ
-    private List<ChiTietHoaDon> chiTietHoaDons;
+    private Integer soLuongBap;
+    private Integer soLuongNuoc;
+	
+    private final Double giaBap = 40.0;
+    private final Double giaNuoc = 20.0;
     
-	public HoaDon(Integer maHD, LocalDateTime ngayLapHoaDon, KhachHang khachHang, NhanVien nhanVien,
-			List<ChiTietHoaDon> chiTietHoaDons) {
+    
+	public HoaDon(Integer maHD, LocalDateTime ngayLapHoaDon, KhachHang khachHang, NhanVien nhanVien, Integer soLuongBap,
+			Integer soLuongNuoc) {
 		super();
 		this.maHD = maHD;
 		this.ngayLapHoaDon = ngayLapHoaDon;
 		this.khachHang = khachHang;
 		this.nhanVien = nhanVien;
-		this.chiTietHoaDons = chiTietHoaDons;
+		this.soLuongBap = soLuongBap;
+		this.soLuongNuoc = soLuongNuoc;
 	}
-	
+
 	public HoaDon() {
 		super();
 	}
@@ -56,13 +62,21 @@ public class HoaDon {
 		this.nhanVien = nhanVien;
 	}
 
-	public List<ChiTietHoaDon> getChiTietHoaDons() {
-		return chiTietHoaDons;
+	public Integer getSoLuongBap() {
+		return soLuongBap;
 	}
 
-	public void setChiTietHoaDons(List<ChiTietHoaDon> chiTietHoaDons) {
-		this.chiTietHoaDons = chiTietHoaDons;
+	public void setSoLuongBap(Integer soLuongBap) {
+		this.soLuongBap = soLuongBap;
 	}
-    
-    
+
+	public Integer getSoLuongNuoc() {
+		return soLuongNuoc;
+	}
+
+	public void setSoLuongNuoc(Integer soLuongNuoc) {
+		this.soLuongNuoc = soLuongNuoc;
+	}
+	
+	
 }

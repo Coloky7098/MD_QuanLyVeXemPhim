@@ -12,8 +12,9 @@ import DAO.PhimDAO;
 import Entity.Phim;
 
 
-public class GiaoDienChonPhim extends JFrame implements MouseListener{
-	PhimDAO phimDAO = new PhimDAO();
+public class GiaoDienChonPhim extends JFrame{
+	private static final long serialVersionUID = 1L;
+	
 	JLabel lblPhimDangChieu;
 	JPanel pnlDanhSachPhim;
 	JScrollPane spDanhSachPhim;
@@ -23,8 +24,11 @@ public class GiaoDienChonPhim extends JFrame implements MouseListener{
 	
 	public GiaoDienChonPhim() {
 		super();
+		MenuChinh menuBar = new MenuChinh(this);
+		this.setJMenuBar(menuBar);
+		MenuToggleUtil.addToggleSupport(this, menuBar);
+		loadPhim();
 		
-		listPhim = phimDAO.getAllPhim();
 		int len = listPhim.size();
 		int columns = len / 4;
 
@@ -171,35 +175,10 @@ public class GiaoDienChonPhim extends JFrame implements MouseListener{
 	    JFrame currentFrame = (JFrame) SwingUtilities.getWindowAncestor(component);
 	    currentFrame.dispose();
 	}
-
-	@Override
-	public void mouseClicked(MouseEvent e) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void mousePressed(MouseEvent e) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void mouseReleased(MouseEvent e) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void mouseEntered(MouseEvent e) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void mouseExited(MouseEvent e) {
-		// TODO Auto-generated method stub
-		
-	}
+	
+	private void loadPhim() {
+		PhimDAO phimDAO = new PhimDAO();
+		this.listPhim = phimDAO.getAllPhim();
+	}	
 	
 }

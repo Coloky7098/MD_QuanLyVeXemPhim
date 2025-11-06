@@ -2,7 +2,7 @@ package GUI;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
-
+import GUI.GiaoDienChonPhim;
 import DAO.SuatChieuDAO;
 
 import java.awt.*;
@@ -13,6 +13,7 @@ import java.util.stream.Collectors;
 
 import Entity.Phim;
 import Entity.SuatChieu;
+import Entity.Ve;
 import Entity.Ghe;
 import Entity.LoaiGhe;
 import Entity.PhongChieu;
@@ -22,6 +23,7 @@ public class GiaoDienChonGhe extends JFrame {
     private JPanel seatPanel;
     private JPanel infoPanel;
     private JLabel lblTotal;
+    private JLabel lblSuat;
     private JButton btnContinue;
     private SuatChieu suatChieu;
     private double basePrice = 60000;
@@ -48,25 +50,6 @@ public class GiaoDienChonGhe extends JFrame {
         setLocationRelativeTo(null);
     }
 
-    // --- MAIN DEMO ---
-//    public static void main(String[] args) {
-//    	 Phim phim = new Phim();
-//    	 phim.setMaPhim(1);
-//    	 phim.setTenPhim("Avengers: Hồi Kết");
-//         phim.setDaoDien("Anthony Russo");
-//         phim.setDoTuoi("18+");
-//         phim.setThoiLuong(180);
-//         phim.setImg("/ImgPhim/endgame.jpg");
-////
-////        SuatChieu sc = new SuatChieu();
-////        sc.setPhim(phim);
-////        sc.setGioChieu(java.time.LocalTime.of(19, 45));
-////        sc.setNgayChieu(java.time.LocalDate.now());
-////        sc.setGiaVeCoBan(75000.0);
-//
-//        SwingUtilities.invokeLater(() -> new GiaoDienChonGhe(phim).setVisible(true));
-//    }
-
     private void initUI() {
         getContentPane().setBackground(COLOR_BG);
         getContentPane().setLayout(new BorderLayout());
@@ -90,36 +73,41 @@ public class GiaoDienChonGhe extends JFrame {
     private JPanel createTimeSelectorPanel() {
         JPanel p = new JPanel(new FlowLayout(FlowLayout.LEFT));
         p.setBackground(COLOR_BG);
+
         JLabel lbl = new JLabel("Đổi suất chiếu:");
         p.add(lbl);
 
-//        String[] times = {"09:45", "11:45", "14:00", "16:00", "18:00", "20:00", "22:00"};
-//        for (String t : times) {
-//            JButton b = new JButton(t);
-//            b.setFocusPainted(false);
-//            b.addActionListener(e -> {
-//                for (Component c : p.getComponents())
-//                    if (c instanceof JButton) ((JButton) c).setBackground(null);
-//                b.setBackground(new Color(0, 120, 215));
-//                b.setForeground(Color.WHITE);
-//            });
-//            p.add(b);
-//        }
-        
         for (SuatChieu sc : listSuatChieu) {
             JButton b = new JButton(sc.getGioChieu().toString());
             b.setFocusPainted(false);
+
             b.addActionListener(e -> {
-                for (Component c : p.getComponents())
-                    if (c instanceof JButton) ((JButton) c).setBackground(null);
+                //Reset lại màu các nút khác
+                for (Component c : p.getComponents()) {
+                    if (c instanceof JButton) {
+                        ((JButton) c).setBackground(null);
+                        ((JButton) c).setForeground(Color.BLACK);
+                    }
+                }
+                //Tô màu nút đang chọn
                 b.setBackground(new Color(0, 120, 215));
                 b.setForeground(Color.WHITE);
+
+                //Cập nhật suất chiếu hiện tại
+                suatChieu = sc;
+
+                //Cập nhật lại label "Suất: ..."
+                if (lblSuat != null) {
+                    lblSuat.setText("Suất: " + suatChieu.getGioChieu());
+                }
             });
+
             p.add(b);
         }
-        
+
         return p;
     }
+
 
     private JPanel createSeatArea() {
         JPanel wrapper = new JPanel(new BorderLayout(10, 10));
@@ -270,7 +258,7 @@ public class GiaoDienChonGhe extends JFrame {
         p.add(lblTitle);
         p.add(Box.createRigidArea(new Dimension(0, 6)));
 
-        JLabel lblSuat = new JLabel("Suất: " + gioChieu);
+        lblSuat = new JLabel("Suất: " + gioChieu);
         lblSuat.setAlignmentX(Component.LEFT_ALIGNMENT);
         p.add(lblSuat);
 
@@ -323,11 +311,18 @@ public class GiaoDienChonGhe extends JFrame {
         btnContinue.setBackground(new Color(255, 153, 51));
         btnContinue.setForeground(Color.WHITE);
 
-        btnBack.addActionListener(e -> dispose());
+        btnBack.addActionListener(e -> {
+            dispose(); // đóng giao diện hiện tại
+            SwingUtilities.invokeLater(() -> new GiaoDienChonPhim().setVisible(true));
+        });
+
         btnContinue.addActionListener(e -> {
-            String msg = "Bạn đã chọn ghế: " + String.join(", ", selectedSeats)
-                    + "\nTổng: " + formatMoney(selectedSeats.size() * basePrice);
-            JOptionPane.showMessageDialog(this, msg, "Xác nhận", JOptionPane.INFORMATION_MESSAGE);
+//            String msg = "Bạn đã chọn ghế: " + String.join(", ", selectedSeats)
+//                    + "\nTổng: " + formatMoney(selectedSeats.size() * basePrice);
+//            JOptionPane.showMessageDialog(this, msg, "Xác nhận", JOptionPane.INFORMATION_MESSAGE);
+        	
+            new GiaoDienThanhToan(selectedSeats, suatChieu).setVisible(true);
+            dispose();
         });
 
         btns.add(btnBack);

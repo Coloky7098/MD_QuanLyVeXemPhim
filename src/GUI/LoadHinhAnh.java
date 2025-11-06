@@ -6,7 +6,7 @@ import java.awt.MediaTracker;
 import javax.swing.ImageIcon;
 
 public class LoadHinhAnh {
-
+	
 	public ImageIcon taiHinhAnh(String path, int width, int height) {
 	    try {
 	        // SỬA: Dùng getResource() để tìm file trong classpath (src)
@@ -36,5 +36,4 @@ public class LoadHinhAnh {
 	        return null;
 	    }
 	}
-	
 }
