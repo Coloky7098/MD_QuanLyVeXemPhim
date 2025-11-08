@@ -4,15 +4,13 @@ public class Ghe {
 	private Integer maGhe;
     private String tenGhe;
     private LoaiGhe loaiGhe; // Quan hệ
-    private boolean trangThaiDat = true; // true = chua dat, false = da dat
     private PhongChieu phongChieu; // Quan hệ
 	
-    public Ghe(Integer maGhe, String tenGhe, LoaiGhe loaiGhe, boolean trangThaiDat, PhongChieu phongChieu) {
+    public Ghe(Integer maGhe, String tenGhe, LoaiGhe loaiGhe, PhongChieu phongChieu) {
 		super();
 		this.maGhe = maGhe;
 		this.tenGhe = tenGhe;
 		this.loaiGhe = loaiGhe;
-		this.trangThaiDat = trangThaiDat;
 		this.phongChieu = phongChieu;
 	}
 
@@ -43,15 +41,7 @@ public class Ghe {
 	public void setLoaiGhe(LoaiGhe loaiGhe) {
 		this.loaiGhe = loaiGhe;
 	}
-
-	public boolean isTrangThaiDat() {
-		return trangThaiDat;
-	}
-
-	public void setTrangThaiDat(boolean trangThaiDat) {
-		this.trangThaiDat = trangThaiDat;
-	}
-
+	
 	public PhongChieu getPhongChieu() {
 		return phongChieu;
 	}

@@ -1,8 +1,6 @@
 package GUI;
 
 import java.awt.*;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import javax.swing.*;
@@ -166,7 +164,6 @@ public class GiaoDienChonPhim extends JFrame{
     }
 
 	private void chonPhim(Phim phim, Component component) {
-		System.out.print(phim.getTenPhim());
 		// Tạo và hiển thị màn hình chọn suất chiếu
 	    GiaoDienChonGhe frm = new GiaoDienChonGhe(phim);
 	    frm.setVisible(true);

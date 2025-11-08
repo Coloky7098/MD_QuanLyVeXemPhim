@@ -165,6 +165,7 @@ public class GiaoDienChonGhe extends JFrame {
                 	    seatBtn.setMargin(new Insets(1, 1, 1, 1)); 
                 	    seatBtn.setFocusPainted(false);
                 	    seatBtn.setBackground(COLOR_AVAILABLE);
+                	    seatBtn.setOpaque(true);
 
                     
                     boolean booked = ((r + c) % 11 == 0);
@@ -317,10 +318,6 @@ public class GiaoDienChonGhe extends JFrame {
         });
 
         btnContinue.addActionListener(e -> {
-//            String msg = "Bạn đã chọn ghế: " + String.join(", ", selectedSeats)
-//                    + "\nTổng: " + formatMoney(selectedSeats.size() * basePrice);
-//            JOptionPane.showMessageDialog(this, msg, "Xác nhận", JOptionPane.INFORMATION_MESSAGE);
-        	
             new GiaoDienThanhToan(selectedSeats, suatChieu).setVisible(true);
             dispose();
         });

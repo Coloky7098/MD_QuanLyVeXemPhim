@@ -1,41 +1,31 @@
 package GUI;
 
-import java.awt.BorderLayout;
-import java.awt.Color;
-import java.awt.Component;
-import java.awt.Dimension;
-import java.awt.FlowLayout;
-import java.awt.Font;
-import java.awt.Image;
-import java.awt.LayoutManager;
-import java.math.RoundingMode;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.sql.Date;
+import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Set;
 
-import javax.swing.BorderFactory;
-import javax.swing.Box;
-import javax.swing.BoxLayout;
-import javax.swing.ImageIcon;
-import javax.swing.JButton;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JSeparator;
-import javax.swing.JTextArea;
-import javax.swing.JTextField;
-import javax.swing.SwingConstants;
-import javax.swing.SwingUtilities;
+import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 
+import DAO.GheDAO;
+import DAO.VeDAO;
+import Entity.Ghe;
 import Entity.Phim;
 import Entity.SuatChieu;
+import Entity.Ve;
 
-public class GiaoDienThanhToan extends JFrame{
-	JPanel pNorth, pWest, pCen;
+public class GiaoDienThanhToan extends JFrame implements ActionListener{
+	private static final long serialVersionUID = 1L;
+	JPanel pNorth, pWest, pCen, pnlTamTinh;
 	JLabel lblThanhToan, lblThongTinVe, lblThongTinKH, lblBapNuoc;
 	JTextField txtTenKH, txtSDT, txtBap, txtNuoc;
-	JButton btnTao, btnQuayLai;
+	JButton btnTao, btnQuayLai, btnTangBap, btnGiamBap, btnTangNuoc, btnGiamNuoc;
 	SuatChieu suatChieuDaChon;
 	Set<String> gheDaChon;
 	
@@ -46,8 +36,14 @@ public class GiaoDienThanhToan extends JFrame{
 	
 	private final Color COLOR_BG = Color.WHITE;
 	private final Font fontTieuDe = new Font("Arial", Font.BOLD, 19);
+	private final Font fontChu = new Font("Arial", Font.PLAIN, 14);
 	private final Dimension POSTER_SIZE = new Dimension(260, 350);
 	private final Dimension BAP_NUOC_SIZE = new Dimension(50, 50);
+	
+	private final double GIA_BAP = 70000;
+	private final double GIA_NUOC = 50000;
+	private int soLuongBap = 0;
+    private int soLuongNuoc = 0;
 	
 	public GiaoDienThanhToan(Set<String> ghe, SuatChieu suatChieu) {
 		this.suatChieuDaChon = suatChieu;
@@ -77,7 +73,7 @@ public class GiaoDienThanhToan extends JFrame{
 	
 	private JPanel createInfoPanel() {
         JPanel p = new JPanel();
-        p.setPreferredSize(new Dimension(320, 0));
+        p.setPreferredSize(new Dimension(450, 0));
         p.setBackground(COLOR_BG);
         p.setLayout(new BoxLayout(p, BoxLayout.Y_AXIS));
         p.setBorder(new EmptyBorder(10, 20, 10, 12));
@@ -112,52 +108,43 @@ public class GiaoDienThanhToan extends JFrame{
                 : "";
 
         JLabel lblTitle = new JLabel(tenPhim);
-        lblTitle.setFont(new Font("SansSerif", Font.BOLD, 14));
+        lblTitle.setFont(new Font("SansSerif", Font.BOLD, 17));
         lblTitle.setAlignmentX(Component.LEFT_ALIGNMENT);
         p.add(lblTitle);
         p.add(Box.createRigidArea(new Dimension(0, 6)));
 
-        JLabel lblSuat = new JLabel("Suất: " + suatChieuDaChon.getGioChieu().toString()+ "   " + suatChieuDaChon.getNgayChieu().toString());
+        JLabel lblSuat = new JLabel("<html><strong>Suất: </strong>" + suatChieuDaChon.getGioChieu().toString()+ "   " + suatChieuDaChon.getNgayChieu().toString() + "</html>");
         lblSuat.setAlignmentX(Component.LEFT_ALIGNMENT);
+        lblSuat.setFont(fontChu);
         p.add(lblSuat);
+        
+        JLabel lblRap = new JLabel("<html><strong>Rạp: </strong>" + suatChieuDaChon.getPhongChieu().getTenPhong() +"</html>");
+        lblRap.setAlignmentX(Component.LEFT_ALIGNMENT);
+        lblRap.setFont(fontChu);
+        p.add(lblRap);
 
-        JLabel lblDaoDien = new JLabel("Đạo diễn: " + daoDien);
+        JLabel lblDaoDien = new JLabel("<html><strong>Đạo diễn: </strong>" + daoDien + "</html>");
         lblDaoDien.setAlignmentX(Component.LEFT_ALIGNMENT);
+        lblDaoDien.setFont(fontChu);
         p.add(lblDaoDien);
 
-        JLabel lblDoTuoi = new JLabel("Độ tuổi: " + doTuoi);
+        JLabel lblDoTuoi = new JLabel("<html><strong>Độ tuổi: </strong>" + doTuoi + "</html>");
         lblDoTuoi.setAlignmentX(Component.LEFT_ALIGNMENT);
+        lblDoTuoi.setFont(fontChu);
         p.add(lblDoTuoi);
 
         if (thoiLuong > 0) {
-            JLabel lblThoiLuong = new JLabel("Thời lượng: " + thoiLuong + " phút");
+            JLabel lblThoiLuong = new JLabel("<html><strong>Thời lượng: </strong>" + thoiLuong + " phút" + "</html>");
             lblThoiLuong.setAlignmentX(Component.LEFT_ALIGNMENT);
+            lblThoiLuong.setFont(fontChu);
             p.add(lblThoiLuong);
         }
         
         String tenGhe = String.join(", ", gheDaChon);
-        JLabel lblGhe = new JLabel("Ghế: " + tenGhe);
+        JLabel lblGhe = new JLabel("<html><strong>Ghế: </strong>" + tenGhe + "</html>");
         lblGhe.setAlignmentX(Component.LEFT_ALIGNMENT);
+        lblGhe.setFont(fontChu);
         p.add(lblGhe);
-        
-        p.add(Box.createRigidArea(new Dimension(0, 10))); // Khoảng cách trước
-
-	     // Tạo panel chứa đường kẻ
-	    JPanel separatorPanel = new JPanel();
-	    separatorPanel.setMaximumSize(new Dimension(Integer.MAX_VALUE, 1));
-	    separatorPanel.setBackground(Color.LIGHT_GRAY);
-	    separatorPanel.setAlignmentX(Component.LEFT_ALIGNMENT);
-	    p.add(separatorPanel);
-	
-	    p.add(Box.createRigidArea(new Dimension(0, 10))); // Khoảng cách sau
-
-        var tongTien = gheDaChon.size()*suatChieuDaChon.getGiaVeCoBan();
-        JLabel lblTotal = new JLabel("Tổng cộng: " + String.valueOf(Math.round(tongTien)));
-        lblTotal.setFont(new Font("SansSerif", Font.BOLD, 14));
-        lblTotal.setAlignmentX(Component.LEFT_ALIGNMENT);
-        
-        
-        p.add(lblTotal);
 
         p.add(Box.createVerticalGlue());
 
@@ -165,75 +152,320 @@ public class GiaoDienThanhToan extends JFrame{
     }
 
 	private JPanel panelThanhToan() {
-		JPanel pnlThanhToan = new JPanel();
-		pnlThanhToan.setLayout(new BoxLayout(pnlThanhToan, BoxLayout.Y_AXIS));
-		pnlThanhToan.setBorder(new EmptyBorder(10, 12, 10, 12));
-//		pnlThanhToan.setSize(Integer.MAX_VALUE, 500);
-		
-		lblThongTinKH = new JLabel("Thông tin khách hàng: ");
-		lblThongTinKH.setFont(fontTieuDe);
-		lblThongTinKH.setAlignmentX(Component.CENTER_ALIGNMENT);
-		
-		Box boxTenKH = Box.createHorizontalBox();
-		JLabel lblTenKH = new JLabel("Tên khách hàng: ");
-		txtTenKH = new JTextField(10);
-		boxTenKH.add(lblTenKH);
-		boxTenKH.add(txtTenKH);
-		
-		Box boxSDT = Box.createHorizontalBox();
-		JLabel lblSDT = new JLabel("Số điện thoại khách hàng: ");
-		txtSDT = new JTextField(10);
-		boxSDT.add(lblSDT);
-		boxSDT.add(txtSDT);
-		
-		lblBapNuoc = new JLabel("Bắp nước:");
-		lblBapNuoc.setFont(fontTieuDe);
-		lblBapNuoc.setAlignmentX(Component.CENTER_ALIGNMENT);
-		
-		Box boxBap = Box.createHorizontalBox();
-		JLabel lblImgBap = new JLabel(load.taiHinhAnh(imgBap, BAP_NUOC_SIZE.width, BAP_NUOC_SIZE.height));
-		JLabel lblBap = new JLabel("Số lượng bắp: ");
-		txtBap = new JTextField(10);
-		boxBap.add(lblImgBap);
-		boxBap.add(lblBap);
-		boxBap.add(txtBap);
-		
-		Box boxNuoc = Box.createHorizontalBox();
-		JLabel lblImgNuoc = new JLabel(load.taiHinhAnh(imgNuoc, BAP_NUOC_SIZE.width, BAP_NUOC_SIZE.height));
-		JLabel lblNuoc = new JLabel("Số lượng nước: ");
-		txtNuoc = new JTextField(10);
-		boxNuoc.add(lblImgNuoc);
-		boxNuoc.add(lblNuoc);
-		boxNuoc.add(txtNuoc);
-		
-		
-		JPanel pnlNut = new JPanel();
-		btnTao = new JButton("Tạo đơn hàng");
-		btnQuayLai = new JButton("Hủy");
-		pnlNut.add(btnQuayLai);
-		pnlNut.add(btnTao);
-		
-		
-		
+        JPanel pnlThanhToan = new JPanel();
+        pnlThanhToan.setLayout(new BoxLayout(pnlThanhToan, BoxLayout.Y_AXIS));
+        pnlThanhToan.setBorder(new EmptyBorder(10, 12, 10, 12));
+        pnlThanhToan.setBackground(COLOR_BG);
 
-		Dimension size = lblSDT.getPreferredSize();
-		lblTenKH.setPreferredSize(size);
-		lblBap.setPreferredSize(size);
-		lblNuoc.setPreferredSize(size);
-		
-		pnlThanhToan.add(lblThongTinKH);     
-		pnlThanhToan.add(Box.createRigidArea(new Dimension(0, 10)));
-		pnlThanhToan.add(boxTenKH);
-		pnlThanhToan.add(boxSDT);
-		pnlThanhToan.add(Box.createRigidArea(new Dimension(0, 10)));
-		pnlThanhToan.add(lblBapNuoc);
-		pnlThanhToan.add(Box.createRigidArea(new Dimension(0, 10)));
-		pnlThanhToan.add(boxBap);
-		pnlThanhToan.add(boxNuoc);
-		pnlThanhToan.add(pnlNut);
-		pnlThanhToan.add(Box.createRigidArea(new Dimension(0, 300))); // Khoảng cách sau
-		
-		pnlThanhToan.add(Box.createVerticalGlue());
-		return pnlThanhToan;
+        // --- 1. Thông tin khách hàng ---
+        lblThongTinKH = new JLabel("Thông tin khách hàng:");
+        lblThongTinKH.setFont(fontTieuDe);
+        lblThongTinKH.setAlignmentX(Component.LEFT_ALIGNMENT); // SỬA: Căn trái
+
+        pnlThanhToan.add(lblThongTinKH);
+        pnlThanhToan.add(Box.createRigidArea(new Dimension(0, 10)));
+        
+        // Dùng hàm hỗ trợ
+        pnlThanhToan.add(createCustomerInfoPanel()); 
+        pnlThanhToan.add(Box.createRigidArea(new Dimension(0, 20)));
+
+        // --- 2. Bắp nước ---
+        lblBapNuoc = new JLabel("Bắp nước:");
+        lblBapNuoc.setFont(fontTieuDe);
+        lblBapNuoc.setAlignmentX(Component.LEFT_ALIGNMENT); // SỬA: Căn trái
+        
+        pnlThanhToan.add(lblBapNuoc);
+        pnlThanhToan.add(Box.createRigidArea(new Dimension(0, 10)));
+
+        // Tạo text field (để có thể truy cập từ bên ngoài)
+        txtBap = new JTextField(3);
+        txtNuoc = new JTextField(3);
+
+        btnTangBap = new JButton("+");
+        btnGiamBap = new JButton("-");
+        btnTangNuoc = new JButton("+");
+        btnGiamNuoc = new JButton("-");
+        
+        
+        pnlThanhToan.add(createFoodItemPanel("Bắp rang", imgBap, txtBap, btnTangBap, btnGiamBap, GIA_BAP));
+        
+        pnlThanhToan.add(Box.createRigidArea(new Dimension(0, 5)));
+
+        pnlThanhToan.add(createFoodItemPanel("Nước ngọt", imgNuoc, txtNuoc, btnTangNuoc, btnGiamNuoc, GIA_NUOC));
+        
+        pnlTamTinh = new JPanel(); // pnlTamTinh bây giờ là biến thành viên
+        pnlTamTinh.setLayout(new BorderLayout()); // Dùng BorderLayout để dễ dàng thay thế
+        pnlTamTinh.setBackground(COLOR_BG);
+        pnlTamTinh.setAlignmentX(Component.LEFT_ALIGNMENT);
+        
+        // Gọi hàm update lần đầu tiên để hiển thị (với giá trị = 0)
+        updateTamTinhPanel(); 
+        
+        pnlThanhToan.add(pnlTamTinh);
+
+        // --- 3. Các nút ---
+        JPanel pnlNut = new JPanel();
+        pnlNut.setBackground(COLOR_BG);
+        pnlNut.setLayout(new FlowLayout(FlowLayout.RIGHT)); // SỬA: Căn phải (hoặc trái)
+        pnlNut.setAlignmentX(Component.LEFT_ALIGNMENT); // Căn trái
+        
+        btnTao = new JButton("Tạo đơn hàng");
+        btnQuayLai = new JButton("Hủy");
+        pnlNut.add(btnQuayLai);
+        pnlNut.add(btnTao);
+        
+        btnTao.addActionListener(this);
+        btnQuayLai.addActionListener(this);
+        
+        pnlThanhToan.add(pnlNut);
+        
+        // --- 4. Đẩy mọi thứ lên trên ---
+        pnlThanhToan.add(Box.createVerticalGlue()); // SỬA: Xóa RigidArea(300)
+
+        return pnlThanhToan;
+    }
+	
+	private JPanel createCustomerInfoPanel() {
+        // Panel này chứa 2 cột: (1) Nhãn, (2) Ô nhập liệu
+        JPanel pnlForm = new JPanel(new BorderLayout(10, 10));
+        pnlForm.setBackground(COLOR_BG);
+
+        // Cột 1: Chứa các nhãn (JLabel)
+        JPanel pnlLabels = new JPanel(new GridLayout(0, 1, 5, 5));
+        pnlLabels.setBackground(COLOR_BG);
+        
+        JLabel lblTenKH = new JLabel("Tên khách hàng:");
+        JLabel lblSDT = new JLabel("Số điện thoại:");
+        
+        pnlLabels.add(lblTenKH);
+        pnlLabels.add(lblSDT);
+
+        // Cột 2: Chứa các ô nhập (JTextField)
+        JPanel pnlFields = new JPanel(new GridLayout(0, 1, 5, 5));
+        pnlFields.setBackground(COLOR_BG);
+        
+        txtTenKH = new JTextField();
+        txtSDT = new JTextField();
+        
+        pnlFields.add(txtTenKH);
+        pnlFields.add(txtSDT);
+
+        // Ghép 2 cột lại
+        pnlForm.add(pnlLabels, BorderLayout.WEST);
+        pnlForm.add(pnlFields, BorderLayout.CENTER);
+        
+        // Giới hạn chiều cao tối đa để form không bị co dãn
+        pnlForm.setMaximumSize(new Dimension(Integer.MAX_VALUE, pnlForm.getPreferredSize().height));
+        pnlForm.setAlignmentX(Component.LEFT_ALIGNMENT); // Căn trái
+
+        return pnlForm;
+    }
+
+	private JPanel createFoodItemPanel(String tenMon, String imgPath, JTextField txtField, JButton btnTang, JButton btnGiam, double gia) {
+        JPanel box = new JPanel();
+        box.setLayout(new BoxLayout(box, BoxLayout.X_AXIS));
+        box.setAlignmentX(Component.LEFT_ALIGNMENT); // Căn trái
+        box.setBackground(COLOR_BG);
+        
+        // Ảnh
+        box.add(new JLabel(load.taiHinhAnh(imgPath, BAP_NUOC_SIZE.width, BAP_NUOC_SIZE.height)));
+        box.add(Box.createRigidArea(new Dimension(10, 0)));
+        
+        // Tên
+        JLabel lblTen = new JLabel(tenMon);
+        lblTen.setPreferredSize(new Dimension(100, 30)); // Đặt kích thước cố định
+        box.add(lblTen);
+        
+        Dimension btnSize = new Dimension(30, 30);
+
+        btnGiam.addActionListener(this);
+        btnGiam.setPreferredSize(btnSize);
+        box.add(btnGiam);
+        
+        // Ô số lượng
+        txtField.setText("0");
+        txtField.setEditable(false);
+        txtField.setHorizontalAlignment(SwingConstants.CENTER);
+        // Giới hạn kích thước của text field
+        txtField.setMaximumSize(new Dimension(50, 30));
+        box.add(txtField);
+        
+        btnTang.addActionListener(this);
+        btnTang.setPreferredSize(btnSize);
+        box.add(btnTang);
+
+        box.add(Box.createHorizontalGlue()); // Đẩy các thành phần về bên trái
+        
+        JLabel lblGiaSP = new JLabel(formatMoney(gia));
+        lblGiaSP.setFont(fontChu);
+        box.add(lblGiaSP);
+        return box;
+    }
+	
+	private JPanel tamTinhPanel() {
+	    JPanel pnlTamTinh = new JPanel();
+	    pnlTamTinh.setLayout(new BoxLayout(pnlTamTinh, BoxLayout.Y_AXIS));
+	    pnlTamTinh.setBackground(COLOR_BG);
+	    pnlTamTinh.setBorder(BorderFactory.createEmptyBorder(10, 0, 10, 0));
+	    pnlTamTinh.setAlignmentX(Component.LEFT_ALIGNMENT); // Căn trái
+
+	    // --- 1. Tính toán giá trị ---
+	    int slVe = gheDaChon.size();
+	    double giaVe = suatChieuDaChon.getGiaVeCoBan(); // Giả sử là double/long
+	    double tongVe = slVe * giaVe;
+
+	    // (Lấy soLuongBap, soLuongNuoc từ biến thành viên của lớp)
+	    double tongBap = soLuongBap * GIA_BAP;
+	    double tongNuoc = soLuongNuoc * GIA_NUOC;
+
+	    double tongTien = tongVe + tongBap + tongNuoc;
+
+	    // --- 2. Thêm các hàng vào panel ---
+	    
+	    // Tiêu đề
+	    JLabel lblTitle = new JLabel("TẠM TÍNH");
+	    lblTitle.setFont(fontTieuDe);
+	    lblTitle.setAlignmentX(Component.LEFT_ALIGNMENT);
+	    pnlTamTinh.add(lblTitle);
+	    pnlTamTinh.add(Box.createRigidArea(new Dimension(0, 10)));
+
+	    // Hàng 1: Vé (Luôn hiển thị)
+	    String veLabel = String.format("Vé xem phim (x%d)", slVe);
+	    pnlTamTinh.add(createTotalRow(veLabel, formatMoney(tongVe), false));
+	    pnlTamTinh.add(Box.createRigidArea(new Dimension(0, 5)));
+
+	    // Hàng 2: Bắp (Chỉ hiển thị nếu có)
+	    if (soLuongBap > 0) {
+	        String bapLabel = String.format("Bắp rang (x%d)", soLuongBap);
+	        pnlTamTinh.add(createTotalRow(bapLabel, formatMoney(tongBap), false));
+	        pnlTamTinh.add(Box.createRigidArea(new Dimension(0, 5)));
+	    }
+
+	    // Hàng 3: Nước (Chỉ hiển thị nếu có)
+	    if (soLuongNuoc > 0) {
+	        String nuocLabel = String.format("Nước ngọt (x%d)", soLuongNuoc);
+	        pnlTamTinh.add(createTotalRow(nuocLabel, formatMoney(tongNuoc), false));
+	    }
+
+	    // --- 3. Dòng tổng cộng ---
+	    pnlTamTinh.add(Box.createRigidArea(new Dimension(0, 10)));
+	    
+	    // Thêm đường kẻ ngang
+	    JSeparator separator = new JSeparator();
+	    separator.setMaximumSize(new Dimension(Integer.MAX_VALUE, 2));
+	    pnlTamTinh.add(separator);
+	    
+	    pnlTamTinh.add(Box.createRigidArea(new Dimension(0, 10)));
+
+	    // Hàng 4: Tổng
+	    pnlTamTinh.add(createTotalRow("TỔNG CỘNG", formatMoney(tongTien), true));
+
+	    // Đẩy tất cả lên trên
+	    pnlTamTinh.add(Box.createVerticalGlue());
+
+	    return pnlTamTinh;
 	}
+	
+	private void updateTamTinhPanel() {
+	    // 1. Xóa tất cả nội dung cũ bên trong container
+	    pnlTamTinh.removeAll();
+
+	    // 2. Gọi hàm factory của bạn để TẠO MỚI panel nội dung
+	    //    Hàm tamTinhPanel() của bạn sẽ tự động kiểm tra soLuongBap > 0
+	    JPanel newContent = tamTinhPanel(); 
+
+	    // 3. Thêm panel nội dung mới vào container
+	    pnlTamTinh.add(newContent, BorderLayout.CENTER);
+
+	    // 4. Vẽ lại giao diện
+	    pnlTamTinh.revalidate();
+	    pnlTamTinh.repaint();
+	}
+	
+	private JPanel createTotalRow(String labelText, String valueText, boolean isBold) {
+	    JPanel row = new JPanel();
+	    row.setLayout(new BoxLayout(row, BoxLayout.X_AXIS));
+	    row.setBackground(COLOR_BG); // Dùng màu nền chung
+
+	    JLabel lblLabel = new JLabel(labelText);
+	    JLabel lblValue = new JLabel(valueText);
+
+	    // In đậm nếu là hàng tổng
+	    if (isBold) {
+	        Font boldFont = lblLabel.getFont().deriveFont(Font.BOLD, 14f);
+	        lblLabel.setFont(boldFont);
+	        lblValue.setFont(boldFont);
+	    } else {
+	        lblLabel.setFont(lblLabel.getFont().deriveFont(Font.PLAIN, 12f));
+	        lblValue.setFont(lblValue.getFont().deriveFont(Font.PLAIN, 12f));
+	    }
+
+	    row.add(lblLabel);
+	    row.add(Box.createHorizontalGlue()); // Đây là mấu chốt: đẩy giá trị sang phải
+	    row.add(lblValue);
+
+	    // Đảm bảo hàng này căn lề trái
+	    row.setAlignmentX(Component.LEFT_ALIGNMENT);
+	    return row;
+	}
+	
+	private String formatMoney(double v) {
+        java.text.NumberFormat nf = java.text.NumberFormat.getInstance(Locale.of("vi", "VN"));
+        return nf.format(Math.round(v)) + " đ";
+    }
+
+	
+	
+	@Override
+	public void actionPerformed(ActionEvent e) {
+		// TODO Auto-generated method stub
+		var event = e.getSource();
+		if(event.equals(btnTangBap)){
+			soLuongBap++;
+			txtBap.setText(String.valueOf(soLuongBap));
+			updateTamTinhPanel();
+		}
+		else if(event.equals(btnGiamBap)){
+			if (soLuongBap > 0) {
+				soLuongBap--;
+				txtBap.setText(String.valueOf(soLuongBap));
+				updateTamTinhPanel();
+			}
+		}
+		else if(event.equals(btnTangNuoc)){
+			soLuongNuoc++;
+			txtNuoc.setText(String.valueOf(soLuongNuoc));
+			updateTamTinhPanel();
+		}
+		else if(event.equals(btnGiamNuoc)){
+			if (soLuongNuoc > 0) {
+				soLuongNuoc--;
+				txtNuoc.setText(String.valueOf(soLuongNuoc));
+				updateTamTinhPanel();
+			}
+		} 
+		if(event.equals(btnTao)) {
+			// Xử lý tạo ghế -> vé -> hóa đơn -> ct hóa đơn
+			VeDAO veDAO = new VeDAO();
+			GheDAO gheDAO = new GheDAO();
+			List<Ve> listVe = new ArrayList<Ve>();
+			List<Ghe> listGhe = new ArrayList<Ghe>();
+			
+			for(String tenGhe : gheDaChon) {
+				Ghe ghe = gheDAO.layGheBangTenGhe(tenGhe);
+				listGhe.add(ghe);
+			}
+			
+			for(Ghe ghe: listGhe) {
+				Ve ve = new Ve(9999, suatChieuDaChon, ghe, suatChieuDaChon.getGiaVeCoBan(), LocalDate.now()
+						, suatChieuDaChon.getNgayChieu(), suatChieuDaChon.getGioChieu(), ghe.getTenGhe()
+						, suatChieuDaChon.getPhongChieu().getTenPhong());
+				listVe.add(ve);
+			}
+			System.out.print("tao ve");
+			veDAO.taoSetVe(listVe);
+		}
+	}
+
+	
 }
