@@ -1,10 +1,12 @@
 package GUI;
 
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
+import java.util.List;
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 
@@ -13,7 +15,7 @@ import DAO.PhimDAO;
 import Entity.Phim;
 
 
-public class GiaoDienChonPhim extends JFrame{
+public class GiaoDienChonPhim extends JFrame implements ActionListener{
 	private static final long serialVersionUID = 1L;
 	
 	JLabel lblPhimDangChieu;
@@ -21,7 +23,7 @@ public class GiaoDienChonPhim extends JFrame{
 	JTextField txtTim;
 	JPanel pnlDanhSachPhim, pnlTitle;
 	JScrollPane spDanhSachPhim;
-	ArrayList<Phim> listPhim;
+	List<Phim> listPhim;
     
 	private static final Dimension CARD_SIZE = new Dimension(240, 460);
 
@@ -83,7 +85,7 @@ public class GiaoDienChonPhim extends JFrame{
         btnTim.setForeground(BTN_COLOR);
         btnTim.setPreferredSize(new Dimension(200, 50));
         btnTim.setFont(new Font("Segoe UI", Font.BOLD, 20));
-        
+        btnTim.addActionListener(this);
         btnTim.setOpaque(true);
         btnTim.setBorderPainted(false);
         btnTim.setContentAreaFilled(true);
@@ -224,15 +226,48 @@ public class GiaoDienChonPhim extends JFrame{
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-		} finally {
-            try {
-                if (conn != null && !conn.isClosed()) {
-                    conn.close();
-                }
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
-        }
+		}
+	}
+
+	@Override
+	public void actionPerformed(ActionEvent e) {
+		// TODO Auto-generated method stub
+		var event = e.getSource();
+		if(event.equals(btnTim)) {
+			String tenPhim = txtTim.getText().trim();
+			Connection conn;
+			try {
+				conn = ConnectDB.getConnection();
+				PhimDAO phimDAO = new PhimDAO(conn);
+				if(!tenPhim.isEmpty()){
+					this.listPhim = phimDAO.search(tenPhim);
+				} else {
+					this.listPhim = phimDAO.getAllPhim();
+				}
+				
+				// Xóa panel cũ
+	            pnlDanhSachPhim.removeAll();
+
+	            // Tạo lại card phim từ listPhim mới
+	            int len = listPhim.size();
+	            int columns = Math.max(len / 4, 1); // tránh chia 0
+	            pnlDanhSachPhim.setLayout(new GridLayout(columns, 5, 10, 10));
+	            for (Phim phim : listPhim) {
+	                pnlDanhSachPhim.add(CardPhim(phim));
+	            }
+
+	            // Refresh panel
+	            pnlDanhSachPhim.revalidate();
+	            pnlDanhSachPhim.repaint();
+	            
+			} catch (SQLException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
+		}
+		
 	}	
+	
+	
 	
 }

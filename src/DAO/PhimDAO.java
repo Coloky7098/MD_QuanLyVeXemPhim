@@ -14,9 +14,6 @@ public class PhimDAO {
 	Connection conn;
 	TheLoaiDAO theLoaiDAO =new TheLoaiDAO();
 	
-	public PhimDAO() {
-		super();
-	}
 	public PhimDAO(Connection conn) {
 		this.conn = conn;
 		this.theLoaiDAO = new TheLoaiDAO(conn);
@@ -191,4 +188,5 @@ public class PhimDAO {
 	    }
 		return phim;
 	}
+	
 }

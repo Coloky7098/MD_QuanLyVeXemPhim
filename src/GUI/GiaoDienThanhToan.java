@@ -403,10 +403,8 @@ public class GiaoDienThanhToan extends JFrame implements ActionListener{
 	        if (ghe.getTenGhe().contains(",")) { // ghế đôi
 	            tongVe += 2 * suatChieuDaChon.getGiaVeCoBan() + phuThu;
 	            soVeThuc += 2;
-
-	            for (String gheComp : ghe.getTenGhe().split(",")) {
-	                daTinh.add(gheComp.trim());
-	            }
+	            daTinh.add(ghe.getTenGhe());
+	            
 	        } else { // ghế đơn
 	            tongVe += suatChieuDaChon.getGiaVeCoBan() + phuThu;
 	            soVeThuc += 1;
