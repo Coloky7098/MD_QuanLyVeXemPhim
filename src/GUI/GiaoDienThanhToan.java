@@ -12,13 +12,13 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 
 import ConnectDB.ConnectDB;
 import DAO.ChiTietHoaDonDAO;
-import DAO.GheDAO;
 import DAO.HoaDonDAO;
 import DAO.KhachHangDAO;
 import DAO.KhuyenMaiDAO;
@@ -43,7 +43,7 @@ public class GiaoDienThanhToan extends JFrame implements ActionListener{
 	JButton btnTao, btnQuayLai, btnTangBap, btnGiamBap, btnTangNuoc, btnGiamNuoc, btnKTKM;
 	JComboBox<String> cbxPTTT;
 	SuatChieu suatChieuDaChon;
-	Set<String> gheDaChon;
+	Set<Ghe> gheDaChon;
 	private KhuyenMai khuyenMaiHopLe = null;
 	List<PhuongThucThanhToan> listPTTT = null;
 	// mock NV
@@ -73,7 +73,8 @@ public class GiaoDienThanhToan extends JFrame implements ActionListener{
     private static final Color BTN_COLOR = Color.WHITE;
     
     
-	public GiaoDienThanhToan(Set<String> ghe, SuatChieu suatChieu) {
+	public GiaoDienThanhToan(Set<Ghe> ghe, SuatChieu suatChieu) {
+		
 		this.suatChieuDaChon = suatChieu;
 		this.gheDaChon = ghe;
 		
@@ -168,7 +169,9 @@ public class GiaoDienThanhToan extends JFrame implements ActionListener{
             p.add(lblThoiLuong);
         }
         
-        String tenGhe = String.join(", ", gheDaChon);
+        String tenGhe = gheDaChon.stream()
+                .map(Ghe::getTenGhe)
+                .collect(Collectors.joining(", "));
         JLabel lblGhe = new JLabel("<html><strong>Ghế: </strong>" + tenGhe + "</html>");
         lblGhe.setAlignmentX(Component.LEFT_ALIGNMENT);
         lblGhe.setFont(fontChu);
@@ -387,42 +390,27 @@ public class GiaoDienThanhToan extends JFrame implements ActionListener{
 	    pnlTamTinh.setAlignmentX(Component.LEFT_ALIGNMENT); // Căn trái
 
 	    // --- 1. Tính toán giá trị ---
-	    Connection conn = null;
-	    try {
-			conn = ConnectDB.getConnection();
-		} catch (SQLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-	    GheDAO gheDAO = new GheDAO(conn);
 	    double tongVe = 0;
 	    int soVeThuc = 0;
 
 	    Set<String> daTinh = new HashSet<>(); // lưu tất cả ghế đã tính (từng ghế đơn)
 
-	    for (String seatId : gheDaChon) {
-	        if (daTinh.contains(seatId)) continue; // nếu ghế đã tính, bỏ qua
+	    for (Ghe ghe : gheDaChon) {
+	        if (daTinh.contains(ghe.getTenGhe())) continue; // nếu ghế đã tính rồi, bỏ qua
 
-	        Ghe g = gheDAO.layGheBangTenGhe(seatId);
-	        if (g == null) continue;
+	        double phuThu = (ghe.getLoaiGhe() != null ? ghe.getLoaiGhe().getPhuThu() : 0);
 
-	        double phuThu = (g.getLoaiGhe() != null ? g.getLoaiGhe().getPhuThu() : 0);
-
-	        if (g.getTenGhe().contains(",")) {
-	            // Ghế đôi: 2 vé + phụ thu 1 lần
+	        if (ghe.getTenGhe().contains(",")) { // ghế đôi
 	            tongVe += 2 * suatChieuDaChon.getGiaVeCoBan() + phuThu;
 	            soVeThuc += 2;
 
-	            // Thêm tất cả ghế thành phần vào set
-	            String[] gheThanhPhan = g.getTenGhe().split(",");
-	            for (String gheComp : gheThanhPhan) {
+	            for (String gheComp : ghe.getTenGhe().split(",")) {
 	                daTinh.add(gheComp.trim());
 	            }
-	        } else {
-	            // Ghế đơn
+	        } else { // ghế đơn
 	            tongVe += suatChieuDaChon.getGiaVeCoBan() + phuThu;
 	            soVeThuc += 1;
-	            daTinh.add(seatId);
+	            daTinh.add(ghe.getTenGhe());
 	        }
 	    }
 
@@ -611,6 +599,9 @@ public class GiaoDienThanhToan extends JFrame implements ActionListener{
 		        List<Ve> listVe = taoVe(conn);
 		        
 		        HoaDon hd = taoHoaDon(listVe, conn);
+		        if(hd == null) {
+		        	conn.rollback();
+		        }
 		        conn.commit();
 		        
 		        GiaoDienDatVeThanhCong frm = new GiaoDienDatVeThanhCong(hd);
@@ -632,24 +623,25 @@ public class GiaoDienThanhToan extends JFrame implements ActionListener{
 
 	private List<Ve> taoVe(Connection conn) throws SQLException {
 	    VeDAO veDAO = new VeDAO(conn);
-	    GheDAO gheDAO = new GheDAO(conn);
 
 	    List<Ve> listVe = new ArrayList<>();
-	    List<Ghe> listGhe = new ArrayList<>();
+	    
+	    for (Ghe ghe : gheDaChon) {
+	    	Double giaVe = 0.0;
+	    	double phuThu = (ghe.getLoaiGhe() != null ? ghe.getLoaiGhe().getPhuThu() : 0);
 
-	    for (String tenGhe : gheDaChon) {
-	        Ghe ghe = gheDAO.layGheBangTenGhe(tenGhe);
-	        if (ghe != null) {
-	            listGhe.add(ghe);
+	        if (ghe.getTenGhe().contains(",")) { // ghế đôi
+	        	giaVe += 2 * suatChieuDaChon.getGiaVeCoBan() + phuThu;
+	        	
+	        } else { // ghế đơn
+	        	giaVe += suatChieuDaChon.getGiaVeCoBan() + phuThu;
 	        }
-	    }
-
-	    for (Ghe ghe : listGhe) {
+	        
 	        Ve ve = new Ve(
 	            9999,
 	            suatChieuDaChon,
 	            ghe,
-	            suatChieuDaChon.getGiaVeCoBan(),
+	            giaVe,
 	            LocalDate.now(),
 	            suatChieuDaChon.getNgayChieu(),
 	            suatChieuDaChon.getGioChieu(),
@@ -663,10 +655,11 @@ public class GiaoDienThanhToan extends JFrame implements ActionListener{
 	    return listVe;
 	}
 	
-	private HoaDon taoHoaDon(List<Ve> listVe, Connection conn) {
+	private HoaDon taoHoaDon(List<Ve> listVe, Connection conn) throws SQLException {
 		// KH, NV -> HD
 		KhachHangDAO khachHangDAO = new KhachHangDAO(conn);
 		HoaDonDAO hoaDonDAO = new HoaDonDAO(conn);
+		ChiTietHoaDonDAO chiTietHoaDonDAO = new ChiTietHoaDonDAO(conn);
 		
 		String ptttDaChon = (String) cbxPTTT.getSelectedItem();
 		PhuongThucThanhToan phuongThucThanhToan = null;
@@ -679,21 +672,35 @@ public class GiaoDienThanhToan extends JFrame implements ActionListener{
 		}
 		System.out.print(ptttDaChon);
 		
-		KhachHang khachHang = new KhachHang(9999, txtTenKH.getText(), txtSDT.getText());
-		if(!khachHangDAO.insertKhachHang(khachHang)) {
-			System.out.print("loi khi tao KH" + khachHang.getMaKH());
-			return null;
-		}
+		 KhachHang khachHang = validateKH();
+	        if (khachHang == null) {
+	            System.err.println("⚠️ Thiếu thông tin khách hàng");
+	            conn.rollback();
+	            return null;
+	        }
+
+	        KhachHang khCoSan = khachHangDAO.layKhachHangBangSDT(khachHang.getSDT());
+	        if (khCoSan != null) {
+	            khachHang = khCoSan; // dùng lại KH cũ
+	        } else if (!khachHangDAO.insertKhachHang(khachHang)) {
+	            System.err.println("❌ Lỗi khi tạo khách hàng");
+	            conn.rollback();
+	            return null;
+	        }
+
 		
 		HoaDon hd = new HoaDon(9999, LocalDateTime.now(), khachHang, nhanVien, soLuongBap, soLuongNuoc, khuyenMaiHopLe, phuongThucThanhToan);
 		if(!hoaDonDAO.taoHoaDon(hd)) {
 			System.out.print("loi khi tao HD");
+            conn.rollback();
 			return null;
 		}
 		
-		ChiTietHoaDonDAO chiTietHoaDonDAO = new ChiTietHoaDonDAO(conn);
-		chiTietHoaDonDAO.taoChiTietHoaDon(hd, listVe);
-		
+		if (!chiTietHoaDonDAO.taoChiTietHoaDon(hd, listVe)) {
+            System.err.println("❌ Lỗi khi tạo chi tiết hóa đơn");
+            conn.rollback();
+            return null;
+        }
 		return hd;
 	}
 	
@@ -708,5 +715,19 @@ public class GiaoDienThanhToan extends JFrame implements ActionListener{
 			e.printStackTrace();
 		}
 		return null;
+	}
+	
+	private KhachHang validateKH() {
+		String tenKH = txtTenKH.getText().trim();
+		String sdtKH = txtSDT.getText().trim();
+		if(!tenKH.matches("^[A-Za-zÀ-Ỹà-ỹ\\s]+$")) {
+			JOptionPane.showMessageDialog(this, "Tên khách hàng không đúng định dạng");
+			return null;
+		}
+		if(!sdtKH.matches("^0(3|5|7|8|9)[0-9]{8}$")) {
+			JOptionPane.showMessageDialog(this, "Số điện thoại khách hàng không đúng định dạng");
+			return null;
+		}
+		return new KhachHang(9999, tenKH, sdtKH);
 	}
 }

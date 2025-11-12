@@ -16,67 +16,48 @@ public class GheDAO {
 	Connection conn;
 	PhongChieuDAO phongChieuDAO;
 	
-	
-	public GheDAO() {
-		super();
-	}
-
 	public GheDAO(Connection conn) {
 		this.conn = conn;
 		this.phongChieuDAO = new PhongChieuDAO(conn);
 	}
 	
 	public Ghe layGheBangTenGhe(String seatId) {
+		System.out.print(seatId);
 	    String sql = "SELECT g.*, lg.*, pc.* " +
 	                 "FROM ghe g " +
 	                 "LEFT JOIN loai_ghe lg ON g.maLoaiGhe = lg.maLoaiGhe " +
-	                 "LEFT JOIN phong_chieu pc ON g.maPhongChieu = pc.maPhongChieu";
-	    
-	    try (PreparedStatement pst = conn.prepareStatement(sql);
-	         ResultSet rs = pst.executeQuery()) {
+	                 "LEFT JOIN phong_chieu pc ON g.maPhongChieu = pc.maPhongChieu " +
+	                 "WHERE g.tenGhe = ? OR g.tenGhe LIKE ?";
 
-	        while (rs.next()) {
-	            String tenGheDb = rs.getString("tenGhe"); // ví dụ "J1,J2" cho ghế đôi
-	            String[] ids = tenGheDb.split(","); // tách ghế đôi
-	            for (String id : ids) {
-	                if (id.trim().equals(seatId)) { // nếu trùng với ghế cần tìm
-	                    // ===== Tạo LoaiGhe từ dữ liệu đã JOIN =====
-	                    LoaiGhe loaiGhe = null;
-	                    int maLoaiGhe = rs.getInt("maLoaiGhe");
-	                    if (!rs.wasNull()) {
-	                        loaiGhe = new LoaiGhe();
-	                        loaiGhe.setMaLoaiGhe(maLoaiGhe);
-	                        loaiGhe.setTenLoaiGhe(rs.getString("tenLoaiGhe"));
-	                        loaiGhe.setPhuThu(rs.getDouble("phuThu"));
-	                    }
-
-	                    // ===== Tạo PhongChieu từ dữ liệu đã JOIN =====
-	                    PhongChieu phongChieu = null;
-	                    int maPhongChieu = rs.getInt("maPhongChieu");
-	                    if (!rs.wasNull()) {
-	                        phongChieu = new PhongChieu();
-	                        phongChieu.setMaPhongChieu(maPhongChieu);
-	                        phongChieu.setTenPhong(rs.getString("tenPhong"));
-	                        phongChieu.setSoLuongGhe(rs.getInt("soLuongGhe"));
-	                    }
-
-	                    // ===== Tạo Ghe với các đối tượng đã có đầy đủ thông tin =====
-	                    return new Ghe(
-	                        rs.getInt("maGhe"),
-	                        tenGheDb, // vẫn giữ tên gốc như trong DB
-	                        loaiGhe,
-	                        phongChieu
-	                    );
-	                }
+	    try (PreparedStatement pst = conn.prepareStatement(sql)) {
+	        pst.setString(1, seatId);             // cho ghế đơn (ví dụ G2)
+	        pst.setString(2, "%" + seatId + "%"); // cho ghế đôi chứa seatId
+	        try (ResultSet rs = pst.executeQuery()) {
+	            if (rs.next()) {
+	                LoaiGhe loaiGhe = new LoaiGhe(
+	                    rs.getInt("maLoaiGhe"),
+	                    rs.getString("tenLoaiGhe")
+	                    , rs.getString("moTa"),
+	                    rs.getDouble("phuThu"));
+	                PhongChieu phongChieu = new PhongChieu(
+	                    rs.getInt("maPhongChieu"),
+	                    rs.getString("tenPhong"),
+	                    rs.getInt("soLuongGhe")
+	                );
+	                return new Ghe(
+	                    rs.getInt("maGhe"),
+	                    rs.getString("tenGhe"), // giữ nguyên "J3,J4"
+	                    loaiGhe,
+	                    phongChieu
+	                );
 	            }
 	        }
-
 	    } catch (SQLException e) {
 	        e.printStackTrace();
-	        System.err.println("Lỗi khi lấy ghế: " + e.getMessage());
 	    }
 	    return null;
 	}
+
 
 	
 	public Ghe layGhebangMaGhe(int maGhe) {
@@ -114,8 +95,7 @@ public class GheDAO {
                      "FROM ghe g " +
                      "JOIN loai_ghe lg ON g.maLoaiGhe = lg.maLoaiGhe " +
                      "WHERE g.maPhongChieu = ?";
-        try (Connection conn = ConnectDB.getConnection();
-             PreparedStatement ps = conn.prepareStatement(sql)) {
+        try (PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setInt(1, maPhong);
             try (ResultSet rs = ps.executeQuery()) {
                 while (rs.next()) {

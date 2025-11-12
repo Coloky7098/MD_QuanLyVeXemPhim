@@ -2,12 +2,16 @@ package GUI;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
+
+import ConnectDB.ConnectDB;
 import GUI.GiaoDienChonPhim;
 import DAO.GheDAO;
 import DAO.SuatChieuDAO;
 
 import java.awt.*;
 import java.awt.event.*;
+import java.sql.Connection;
+import java.sql.SQLException;
 import java.util.*;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -32,6 +36,8 @@ public class GiaoDienChonGhe extends JFrame {
     private Map<String, Ghe> seatIdMap = new HashMap<>();
     private Set<String> selectedSeats = new LinkedHashSet<>();
     private List<SuatChieu> listSuatChieu;
+    Set<Ghe> countedGhe = new HashSet<>();
+    
     // colors
     private final Color COLOR_AVAILABLE = new Color(240, 240, 240);
     private final Color COLOR_BOOKED = Color.RED; // đỏ nhạt
@@ -147,7 +153,14 @@ public class GiaoDienChonGhe extends JFrame {
         }
 
         // Lấy danh sách ghế theo phòng chiếu
-        List<Ghe> gheList = new GheDAO().getGheTheoPhong(suatChieu.getPhongChieu().getMaPhongChieu());
+        Connection conn = null;
+		try {
+			conn = ConnectDB.getConnection();
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+        List<Ghe> gheList = new GheDAO(conn).getGheTheoPhong(suatChieu.getPhongChieu().getMaPhongChieu());
         seatIdMap.clear();
         for (Ghe g : gheList) {
             String[] ids;
@@ -370,7 +383,7 @@ public class GiaoDienChonGhe extends JFrame {
         });
 
         btnContinue.addActionListener(e -> {
-            new GiaoDienThanhToan(selectedSeats, suatChieu).setVisible(true);
+            new GiaoDienThanhToan(countedGhe, suatChieu).setVisible(true);
             dispose();
         });
 
@@ -383,7 +396,7 @@ public class GiaoDienChonGhe extends JFrame {
             StringBuilder sb = new StringBuilder();
             double total = 0;
 
-            Set<Ghe> countedGhe = new HashSet<>(); // để ghế đôi không bị tính 2 lần
+            countedGhe = new HashSet<>(); // để ghế đôi không bị tính 2 lần
 
             for (String seatId : selectedSeats) {
                 Ghe g = seatIdMap.get(seatId);
@@ -396,6 +409,7 @@ public class GiaoDienChonGhe extends JFrame {
                     sb.append(g.getTenGhe()).append(", ");
                 } else if (!g.getTenGhe().contains(",")) {
                     // Ghế thường
+                	countedGhe.add(g);
                     total += basePrice;
                     sb.append(seatId).append(", ");
                 }

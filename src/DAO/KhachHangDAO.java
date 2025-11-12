@@ -60,4 +60,23 @@ public class KhachHangDAO {
 
         return kh;
     }
+
+	public KhachHang layKhachHangBangSDT(String sdt) {
+        String sql = "SELECT * FROM khach_hang WHERE SDT = ?";
+        try (PreparedStatement pst = conn.prepareStatement(sql)) {
+            pst.setString(1, sdt);
+            try (ResultSet rs = pst.executeQuery()) {
+                if (rs.next()) {
+                    KhachHang kh = new KhachHang();
+                    kh.setMaKH(rs.getInt("maKH"));
+                    kh.setTenKH(rs.getString("tenKH"));
+                    kh.setSDT(rs.getString("SDT"));
+                    return kh;
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
 }

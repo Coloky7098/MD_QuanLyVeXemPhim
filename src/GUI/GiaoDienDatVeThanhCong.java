@@ -19,8 +19,8 @@ import Entity.Ve;
 
 public class GiaoDienDatVeThanhCong extends JFrame implements ActionListener{
 	private JLabel lblIcon, lblTitle, lblSubtitle;
-    private JLabel lblMaGD, lblPhuongThuc, lblSoTien, lblGhe;
-    private JLabel valMaGD, valPhuongThuc, valSoTien, valGhe;
+    private JLabel lblMaGD, lblPhuongThuc, lblSoTien, lblGhe, lblSuatChieu, lblNgayChieu, lblPhongChieu;
+    private JLabel valMaGD, valPhuongThuc, valSoTien, valGhe, valSuatChieu, valNgayChieu, valPhongChieu;
     private JButton btnInVe, btnHoanTat;
 	    
 	HoaDon hoaDon;
@@ -72,24 +72,37 @@ public class GiaoDienDatVeThanhCong extends JFrame implements ActionListener{
         lblMaGD = makeLabel("Mã giao dịch");
         lblPhuongThuc = makeLabel("Phương thức");
         lblSoTien = makeLabel("Số tiền");
+        lblSuatChieu = makeLabel("Suất chiếu");
+        lblNgayChieu = makeLabel("Ngày chiếu");
+        lblPhongChieu = makeLabel("Phòng");
         lblGhe = makeLabel("Ghế");
-
-        valMaGD = makeValue("HD-" + hoaDon.getMaHD());
-//        valPhuongThuc = makeValue(hoaDon.getPhuongThucThanhToan().getTenPTTT());
-        valPhuongThuc = makeValue("VL");
+        
+                
+        valMaGD = makeValue(hoaDon.getMaHD() + "");
+        valPhuongThuc = makeValue(hoaDon.getPhuongThucThanhToan().getTenPTTT());
         valSoTien = makeValue(String.format("%,.0f đ", hoaDon.tinhTong(listCTHD)));
         valSoTien.setForeground(new Color(255, 130, 0));
-
+        
         valGhe = makeValue(layDanhSachGhe(listCTHD.stream().map(ChiTietHoaDon::getVe).toList()));
-
+        valSuatChieu = makeValue(listCTHD.get(0).getVe().getGioChieu() + "");
+        valNgayChieu = makeValue(listCTHD.get(0).getVe().getNgayChieu() + "");
+        valPhongChieu = makeValue(listCTHD.get(0).getVe().getTenPhongChieu() + "");
+        
         gbc.gridx = 0; gbc.gridy = 0; pnlInfo.add(lblMaGD, gbc);
         gbc.gridx = 1; pnlInfo.add(valMaGD, gbc);
         gbc.gridx = 0; gbc.gridy = 1; pnlInfo.add(lblPhuongThuc, gbc);
         gbc.gridx = 1; pnlInfo.add(valPhuongThuc, gbc);
-        gbc.gridx = 0; gbc.gridy = 2; pnlInfo.add(lblSoTien, gbc);
-        gbc.gridx = 1; pnlInfo.add(valSoTien, gbc);
         gbc.gridx = 0; gbc.gridy = 3; pnlInfo.add(lblGhe, gbc);
         gbc.gridx = 1; pnlInfo.add(valGhe, gbc);
+        gbc.gridx = 0; gbc.gridy = 4; pnlInfo.add(lblSuatChieu, gbc);
+        gbc.gridx = 1; pnlInfo.add(valSuatChieu, gbc);
+        gbc.gridx = 0; gbc.gridy = 5; pnlInfo.add(lblNgayChieu, gbc);
+        gbc.gridx = 1; pnlInfo.add(valNgayChieu, gbc);
+        gbc.gridx = 0; gbc.gridy = 6; pnlInfo.add(lblPhongChieu, gbc);
+        gbc.gridx = 1; pnlInfo.add(valPhongChieu, gbc);
+        gbc.gridx = 0; gbc.gridy = 7; pnlInfo.add(lblSoTien, gbc);
+        gbc.gridx = 1; pnlInfo.add(valSoTien, gbc);
+        
 
         // ======= BUTTONS =======
         JPanel pnlBottom = new JPanel();
@@ -146,6 +159,7 @@ public class GiaoDienDatVeThanhCong extends JFrame implements ActionListener{
     private JLabel makeValue(String text) {
         JLabel lbl = new JLabel(text);
         lbl.setFont(new Font("Segoe UI", Font.BOLD, 16));
+        lbl.setAlignmentX(Component.RIGHT_ALIGNMENT);
         lbl.setForeground(TEXT_COLOR);
         return lbl;
     }
