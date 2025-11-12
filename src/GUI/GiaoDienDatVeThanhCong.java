@@ -3,10 +3,17 @@ package GUI;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.sql.Connection;
+import java.sql.SQLException;
 
 import javax.swing.*;
+
+import ConnectDB.ConnectDB;
+import DAO.ChiTietHoaDonDAO;
+
 import java.util.List;
 
+import Entity.ChiTietHoaDon;
 import Entity.HoaDon;
 import Entity.Ve;
 
@@ -17,15 +24,20 @@ public class GiaoDienDatVeThanhCong extends JFrame implements ActionListener{
     private JButton btnInVe, btnHoanTat;
 	    
 	HoaDon hoaDon;
-	List<Ve> listVe;
+	List<ChiTietHoaDon> listCTHD;
 	
-	private static final Color SEC_COLOR = new Color(28, 32, 40);
-	private static final Color PRI_COLOR = new Color(18, 22, 28);
-	
-	public GiaoDienDatVeThanhCong(HoaDon hoaDon, List<Ve> listVe) {
+	private static final Color PRI_COLOR = new Color(252, 247, 223);
+    private static final Color SEC_COLOR = new Color(253, 252, 241);
+    private static final Color RED_COLOR = new Color(212, 54, 37);
+    
+    private static final Color TEXT_COLOR = Color.BLACK;
+    private static final Color BTN_COLOR = Color.WHITE;
+    
+	public GiaoDienDatVeThanhCong(HoaDon hoaDon) {
 		super();
 		this.hoaDon = hoaDon;
-		this.listVe = listVe;
+		
+		loadCTHD();
 		
 		// ======= ICON + TITLE =======
         JPanel pnlTop = new JPanel(new BorderLayout());
@@ -38,11 +50,11 @@ public class GiaoDienDatVeThanhCong extends JFrame implements ActionListener{
 
         lblTitle = new JLabel("Thanh Toán Thành Công!", SwingConstants.CENTER);
         lblTitle.setFont(new Font("Segoe UI", Font.BOLD, 28));
-        lblTitle.setForeground(Color.WHITE);
+        lblTitle.setForeground(TEXT_COLOR);
 
         lblSubtitle = new JLabel("Vé của bạn đã được xác nhận", SwingConstants.CENTER);
         lblSubtitle.setFont(new Font("Segoe UI", Font.PLAIN, 16));
-        lblSubtitle.setForeground(new Color(150, 150, 150));
+        lblSubtitle.setForeground(TEXT_COLOR);
 
         pnlTop.add(lblIcon, BorderLayout.NORTH);
         pnlTop.add(lblTitle, BorderLayout.CENTER);
@@ -65,10 +77,10 @@ public class GiaoDienDatVeThanhCong extends JFrame implements ActionListener{
         valMaGD = makeValue("HD-" + hoaDon.getMaHD());
 //        valPhuongThuc = makeValue(hoaDon.getPhuongThucThanhToan().getTenPTTT());
         valPhuongThuc = makeValue("VL");
-        valSoTien = makeValue(String.format("%,.0f đ", tinhTongTien(hoaDon, listVe)));
+        valSoTien = makeValue(String.format("%,.0f đ", hoaDon.tinhTong(listCTHD)));
         valSoTien.setForeground(new Color(255, 130, 0));
 
-        valGhe = makeValue(layDanhSachGhe(listVe));
+        valGhe = makeValue(layDanhSachGhe(listCTHD.stream().map(ChiTietHoaDon::getVe).toList()));
 
         gbc.gridx = 0; gbc.gridy = 0; pnlInfo.add(lblMaGD, gbc);
         gbc.gridx = 1; pnlInfo.add(valMaGD, gbc);
@@ -81,27 +93,39 @@ public class GiaoDienDatVeThanhCong extends JFrame implements ActionListener{
 
         // ======= BUTTONS =======
         JPanel pnlBottom = new JPanel();
-        pnlBottom.setBackground(new Color(18, 22, 28));
+        pnlBottom.setBackground(PRI_COLOR);
         pnlBottom.setBorder(BorderFactory.createEmptyBorder(10, 0, 20, 0));
 
         btnInVe = new JButton("🖨 In Vé");
-        btnInVe.setFont(new Font("Segoe UI", Font.BOLD, 16));
-        btnInVe.setBackground(new Color(40, 45, 55));
-        btnInVe.setForeground(Color.WHITE);
-        btnInVe.setFocusPainted(false);
-        btnInVe.setPreferredSize(new Dimension(150, 45));
+        
+        btnInVe.setBackground(RED_COLOR);
+        btnInVe.setForeground(BTN_COLOR);
+        btnInVe.setPreferredSize(new Dimension(200, 50));
+        btnInVe.setFont(new Font("Segoe UI", Font.BOLD, 20));
+        
+        btnInVe.setOpaque(true);
+        btnInVe.setBorderPainted(false);
+        btnInVe.setContentAreaFilled(true);
 
         btnHoanTat = new JButton("Hoàn Tất");
-        btnHoanTat.setFont(new Font("Segoe UI", Font.BOLD, 16));
-        btnHoanTat.setBackground(new Color(255, 100, 0));
-        btnHoanTat.setForeground(Color.WHITE);
-        btnHoanTat.setFocusPainted(false);
-        btnHoanTat.setPreferredSize(new Dimension(150, 45));
+        
+        btnHoanTat.setBackground(RED_COLOR);
+        btnHoanTat.setForeground(BTN_COLOR);
+        btnHoanTat.setPreferredSize(new Dimension(200, 50));
+        btnHoanTat.setFont(new Font("Segoe UI", Font.BOLD, 20));
+        
+        btnHoanTat.setOpaque(true);
+        btnHoanTat.setBorderPainted(false);
+        btnHoanTat.setContentAreaFilled(true);
+//        btnHoanTat.setFocusPainted(false);
 
         pnlBottom.add(btnInVe);
         pnlBottom.add(Box.createRigidArea(new Dimension(15, 0)));
         pnlBottom.add(btnHoanTat);
 
+        btnHoanTat.addActionListener(this);
+        btnInVe.addActionListener(this);
+        
         // ======= ADD TO FRAME =======
         add(pnlTop, BorderLayout.NORTH);
         add(pnlInfo, BorderLayout.CENTER);
@@ -115,22 +139,15 @@ public class GiaoDienDatVeThanhCong extends JFrame implements ActionListener{
     private JLabel makeLabel(String text) {
         JLabel lbl = new JLabel(text);
         lbl.setFont(new Font("Segoe UI", Font.PLAIN, 16));
-        lbl.setForeground(new Color(180, 180, 180));
+        lbl.setForeground(TEXT_COLOR);
         return lbl;
     }
 
     private JLabel makeValue(String text) {
         JLabel lbl = new JLabel(text);
         lbl.setFont(new Font("Segoe UI", Font.BOLD, 16));
-        lbl.setForeground(Color.WHITE);
+        lbl.setForeground(TEXT_COLOR);
         return lbl;
-    }
-
-    private double tinhTongTien(HoaDon hd, List<Ve> listVe) {
-        double tongVe = listVe.stream().mapToDouble(Ve::getGiaVe).sum();
-        double tongBap = hd.getSoLuongBap() * 50000;
-        double tongNuoc = hd.getSoLuongNuoc() * 30000;
-        return tongVe + tongBap + tongNuoc;
     }
 
     private String layDanhSachGhe(List<Ve> listVe) {
@@ -151,7 +168,21 @@ public class GiaoDienDatVeThanhCong extends JFrame implements ActionListener{
 			frmChonPhim.setVisible(true);
 			dispose();
 		}
+		if(event.equals(btnInVe)) {
+			System.out.print("in vé");
+		}
 	}
 	
+	private void loadCTHD() {
+		Connection conn = null;
+		try {
+			conn = ConnectDB.getConnection();
+			ChiTietHoaDonDAO cthdDAO = new ChiTietHoaDonDAO(conn);
+			this.listCTHD = cthdDAO.layChitiethoadon(hoaDon.getMaHD());
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
     
 }

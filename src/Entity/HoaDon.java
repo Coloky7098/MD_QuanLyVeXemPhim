@@ -10,7 +10,7 @@ public class HoaDon {
     private NhanVien nhanVien; // Quan hệ
     private Integer soLuongBap;
     private Integer soLuongNuoc;
-	private KhuyenMai khuyenMai;
+	private KhuyenMai khuyenMai = null;
 	private PhuongThucThanhToan phuongThucThanhToan;
 	
     private final Double giaBap = 70000.0;
@@ -37,7 +37,7 @@ public class HoaDon {
 		}
 		tong += soLuongBap * giaBap;
 		tong += soLuongNuoc * giaNuoc;
-		if(!khuyenMai.equals(null)) {
+		if(!(khuyenMai == null)) {
 			tong -= khuyenMai.getGiaTriKM();
 		}
 		return tong;

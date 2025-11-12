@@ -55,7 +55,6 @@ public class GiaoDienThanhToan extends JFrame implements ActionListener{
 	private final String imgBap = "/img/bap.jpg";
 	private final String imgNuoc = "/img/nuoc.jpg";
 	
-	private final Color COLOR_BG = Color.WHITE;
 	private final Font fontTieuDe = new Font("Arial", Font.BOLD, 19);
 	private final Font fontChu = new Font("Arial", Font.PLAIN, 14);
 	private final Dimension POSTER_SIZE = new Dimension(340, 450);
@@ -66,6 +65,14 @@ public class GiaoDienThanhToan extends JFrame implements ActionListener{
 	private int soLuongBap = 0;
     private int soLuongNuoc = 0;
 	
+	private static final Color PRI_COLOR = new Color(252, 247, 223);
+    private static final Color SEC_COLOR = new Color(253, 252, 241);
+    private static final Color RED_COLOR = new Color(212, 54, 37);
+    
+    private static final Color TEXT_COLOR = Color.BLACK;
+    private static final Color BTN_COLOR = Color.WHITE;
+    
+    
 	public GiaoDienThanhToan(Set<String> ghe, SuatChieu suatChieu) {
 		this.suatChieuDaChon = suatChieu;
 		this.gheDaChon = ghe;
@@ -82,7 +89,7 @@ public class GiaoDienThanhToan extends JFrame implements ActionListener{
 		pWest = createInfoPanel();
 		
 		pCen = panelThanhToan();
-		pCen.setBackground(COLOR_BG);
+		pCen.setBackground(SEC_COLOR);
 
 		spnCen = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, pWest, pCen);
 		spnCen.setDividerLocation(400); 
@@ -98,7 +105,7 @@ public class GiaoDienThanhToan extends JFrame implements ActionListener{
 	private JPanel createInfoPanel() {
         JPanel p = new JPanel();
         p.setPreferredSize(new Dimension(450, 0));
-        p.setBackground(COLOR_BG);
+        p.setBackground(PRI_COLOR);
         p.setLayout(new BoxLayout(p, BoxLayout.Y_AXIS));
         p.setBorder(new EmptyBorder(10, 20, 10, 12));
 
@@ -176,7 +183,7 @@ public class GiaoDienThanhToan extends JFrame implements ActionListener{
         JPanel pnlThanhToan = new JPanel();
         pnlThanhToan.setLayout(new BoxLayout(pnlThanhToan, BoxLayout.Y_AXIS));
         pnlThanhToan.setBorder(new EmptyBorder(10, 12, 10, 12));
-        pnlThanhToan.setBackground(COLOR_BG);
+        pnlThanhToan.setBackground(SEC_COLOR);
 
         // --- 1. Thông tin khách hàng ---
         lblThongTinKH = new JLabel("Thông tin khách hàng:");
@@ -216,7 +223,7 @@ public class GiaoDienThanhToan extends JFrame implements ActionListener{
 
         pnlTamTinh = new JPanel();
         pnlTamTinh.setLayout(new BorderLayout()); 
-        pnlTamTinh.setBackground(COLOR_BG);
+        pnlTamTinh.setBackground(SEC_COLOR);
         pnlTamTinh.setAlignmentX(Component.LEFT_ALIGNMENT);
         
         // Gọi hàm update lần đầu tiên để hiển thị (với giá trị = 0)
@@ -226,7 +233,7 @@ public class GiaoDienThanhToan extends JFrame implements ActionListener{
 
         // --- 3. Các nút ---
         JPanel pnlNut = new JPanel();
-        pnlNut.setBackground(COLOR_BG);
+        pnlNut.setBackground(SEC_COLOR);
         pnlNut.setLayout(new FlowLayout(FlowLayout.RIGHT)); // SỬA: Căn phải (hoặc trái)
         pnlNut.setAlignmentX(Component.LEFT_ALIGNMENT); // Căn trái
         
@@ -234,6 +241,24 @@ public class GiaoDienThanhToan extends JFrame implements ActionListener{
         btnQuayLai = new JButton("Hủy");
         pnlNut.add(btnQuayLai);
         pnlNut.add(btnTao);
+        
+        btnTao.setBackground(RED_COLOR);
+        btnTao.setForeground(BTN_COLOR);
+        btnTao.setPreferredSize(new Dimension(200, 50));
+        btnTao.setFont(new Font("Segoe UI", Font.BOLD, 20));
+        
+        btnTao.setOpaque(true);
+        btnTao.setBorderPainted(false);
+        btnTao.setContentAreaFilled(true);
+        
+        btnQuayLai.setBackground(RED_COLOR);
+        btnQuayLai.setForeground(BTN_COLOR);
+        btnQuayLai.setPreferredSize(new Dimension(200, 50));
+        btnQuayLai.setFont(new Font("Segoe UI", Font.BOLD, 20));
+        
+        btnQuayLai.setOpaque(true);
+        btnQuayLai.setBorderPainted(false);
+        btnQuayLai.setContentAreaFilled(true);
         
         btnTao.addActionListener(this);
         btnQuayLai.addActionListener(this);
@@ -249,11 +274,11 @@ public class GiaoDienThanhToan extends JFrame implements ActionListener{
 	private JPanel createCustomerInfoPanel() {
         // Panel này chứa 2 cột: (1) Nhãn, (2) Ô nhập liệu
         JPanel pnlForm = new JPanel(new BorderLayout(10, 10));
-        pnlForm.setBackground(COLOR_BG);
+        pnlForm.setBackground(SEC_COLOR);
 
         // Cột 1: Chứa các nhãn (JLabel)
         JPanel pnlLabels = new JPanel(new GridLayout(0, 1, 5, 5));
-        pnlLabels.setBackground(COLOR_BG);
+        pnlLabels.setBackground(SEC_COLOR);
         
         JLabel lblTenKH = new JLabel("Tên khách hàng:");
         JLabel lblSDT = new JLabel("Số điện thoại:");
@@ -272,7 +297,7 @@ public class GiaoDienThanhToan extends JFrame implements ActionListener{
         
         // Cột 2: Chứa các ô nhập (JTextField)
         JPanel pnlFields = new JPanel(new GridLayout(0, 1, 5, 5));
-        pnlFields.setBackground(COLOR_BG);
+        pnlFields.setBackground(SEC_COLOR);
         
         this.listPTTT = loadPTTT();
         
@@ -282,7 +307,7 @@ public class GiaoDienThanhToan extends JFrame implements ActionListener{
         
         JPanel pnlKM = new JPanel();
         pnlKM.setLayout(new BoxLayout(pnlKM, BoxLayout.X_AXIS));
-        pnlKM.setBackground(COLOR_BG);
+        pnlKM.setBackground(SEC_COLOR);
         txtKM = new JTextField(10);
         btnKTKM = new JButton("Kiểm tra");
         btnKTKM.addActionListener(this);
@@ -316,7 +341,7 @@ public class GiaoDienThanhToan extends JFrame implements ActionListener{
         JPanel box = new JPanel();
         box.setLayout(new BoxLayout(box, BoxLayout.X_AXIS));
         box.setAlignmentX(Component.LEFT_ALIGNMENT); // Căn trái
-        box.setBackground(COLOR_BG);
+        box.setBackground(SEC_COLOR);
         
         // Ảnh
         box.add(new JLabel(load.taiHinhAnh(imgPath, BAP_NUOC_SIZE.width, BAP_NUOC_SIZE.height)));
@@ -357,12 +382,19 @@ public class GiaoDienThanhToan extends JFrame implements ActionListener{
 	private JPanel tamTinhPanel() {
 	    JPanel pnlTamTinh = new JPanel();
 	    pnlTamTinh.setLayout(new BoxLayout(pnlTamTinh, BoxLayout.Y_AXIS));
-	    pnlTamTinh.setBackground(COLOR_BG);
+	    pnlTamTinh.setBackground(SEC_COLOR);
 	    pnlTamTinh.setBorder(BorderFactory.createEmptyBorder(10, 0, 10, 0));
 	    pnlTamTinh.setAlignmentX(Component.LEFT_ALIGNMENT); // Căn trái
 
 	    // --- 1. Tính toán giá trị ---
-	    GheDAO gheDAO = new GheDAO();
+	    Connection conn = null;
+	    try {
+			conn = ConnectDB.getConnection();
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	    GheDAO gheDAO = new GheDAO(conn);
 	    double tongVe = 0;
 	    int soVeThuc = 0;
 
@@ -477,7 +509,7 @@ public class GiaoDienThanhToan extends JFrame implements ActionListener{
 	private JPanel createTotalRow(String labelText, String valueText, boolean isBold) {
 	    JPanel row = new JPanel();
 	    row.setLayout(new BoxLayout(row, BoxLayout.X_AXIS));
-	    row.setBackground(COLOR_BG); // Dùng màu nền chung
+	    row.setBackground(SEC_COLOR); // Dùng màu nền chung
 
 	    JLabel lblLabel = new JLabel(labelText);
 	    JLabel lblValue = new JLabel(valueText);
@@ -581,7 +613,7 @@ public class GiaoDienThanhToan extends JFrame implements ActionListener{
 		        HoaDon hd = taoHoaDon(listVe, conn);
 		        conn.commit();
 		        
-		        GiaoDienDatVeThanhCong frm = new GiaoDienDatVeThanhCong(hd, listVe);
+		        GiaoDienDatVeThanhCong frm = new GiaoDienDatVeThanhCong(hd);
 		        frm.setVisible(true);
 		        dispose();
 			}catch (Exception ex) {

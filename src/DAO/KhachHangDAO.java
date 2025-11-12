@@ -24,7 +24,7 @@ public class KhachHangDAO {
 
             try (ResultSet rs = pst.executeQuery()) {
                 if (rs.next()) {
-                    khachHang.setMaKH(rs.getInt(1)); // lấy maVe mới
+                    khachHang.setMaKH(rs.getInt(1));
                     return true;
                 }
             }

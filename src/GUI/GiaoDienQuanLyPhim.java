@@ -3,9 +3,14 @@ package GUI;
 import javax.swing.*;
 import javax.swing.border.*;
 import javax.swing.table.DefaultTableModel;
+
+import ConnectDB.ConnectDB;
+
 import javax.swing.filechooser.FileNameExtensionFilter;
 import java.awt.*;
 import java.awt.event.*;
+import java.sql.Connection;
+import java.sql.SQLException;
 import java.time.LocalDate;
 import java.util.List;
 
@@ -42,8 +47,9 @@ public class GiaoDienQuanLyPhim extends JPanel implements ActionListener {
     private JTable table = new JTable(model);
 
     // DAO
-    private PhimDAO phimDAO = new PhimDAO();
-    private TheLoaiDAO theLoaiDAO = new TheLoaiDAO();
+    Connection conn;
+    private PhimDAO phimDAO;
+    private TheLoaiDAO theLoaiDAO;
 
     // Buttons
     private JButton btnBack, btnFind, btnReload;
@@ -53,7 +59,15 @@ public class GiaoDienQuanLyPhim extends JPanel implements ActionListener {
     private String selectedImgPath = null;
 
     public GiaoDienQuanLyPhim() {
-
+    	try {
+			this.conn = ConnectDB.getConnection();
+			this.phimDAO = new PhimDAO(conn);
+			this.theLoaiDAO  = new TheLoaiDAO(conn);
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+    	
         setLayout(new BorderLayout(10,10));
         setBorder(new EmptyBorder(10,10,10,10));
         setBackground(new Color(245,245,245));

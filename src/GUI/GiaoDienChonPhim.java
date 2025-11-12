@@ -83,7 +83,10 @@ public class GiaoDienChonPhim extends JFrame{
         btnTim.setForeground(BTN_COLOR);
         btnTim.setPreferredSize(new Dimension(200, 50));
         btnTim.setFont(new Font("Segoe UI", Font.BOLD, 20));
+        
         btnTim.setOpaque(true);
+        btnTim.setBorderPainted(false);
+        btnTim.setContentAreaFilled(true);
         
         pnlSearch.add(txtTim);
         pnlSearch.add(btnTim);
