@@ -4,7 +4,6 @@ import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 
 import ConnectDB.ConnectDB;
-import GUI.GiaoDienChonPhim;
 import DAO.GheDAO;
 import DAO.SuatChieuDAO;
 
@@ -14,14 +13,10 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.*;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import Entity.Phim;
 import Entity.SuatChieu;
-import Entity.Ve;
 import Entity.Ghe;
-import Entity.LoaiGhe;
-import Entity.PhongChieu;
 
 @SuppressWarnings("serial")
 public class GiaoDienChonGhe extends JFrame {

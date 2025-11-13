@@ -43,6 +43,14 @@ public class HoaDon {
 		return tong;
 	}
 
+	public Double tinhGiaBap() {
+		return giaBap * soLuongBap;
+	}
+	
+	public Double tinhGiaNuoc() {
+		return giaNuoc * soLuongNuoc;
+	}
+	
 	public HoaDon() {
 		super();
 	}
@@ -109,6 +117,14 @@ public class HoaDon {
 
 	public void setPhuongThucThanhToan(PhuongThucThanhToan phuongThucThanhToan) {
 		this.phuongThucThanhToan = phuongThucThanhToan;
+	}
+
+	public Double getGiaBap() {
+		return giaBap;
+	}
+
+	public Double getGiaNuoc() {
+		return giaNuoc;
 	}
 	
 	
