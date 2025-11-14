@@ -17,7 +17,7 @@ public class PhuongThucThanhToanDAO {
 		this.conn = conn;
 	}
 	
-	public List<PhuongThucThanhToan> getAll() throws SQLException {
+	public List<PhuongThucThanhToan> layTatCaPTTT(){
         
 		List<PhuongThucThanhToan> list = new ArrayList<>();
         String sql = "SELECT * FROM phuong_thuc_thanh_toan";
@@ -33,7 +33,10 @@ public class PhuongThucThanhToanDAO {
                 );
                 list.add(p);
             }
-        }
+        } catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
         return list;
     }
 	

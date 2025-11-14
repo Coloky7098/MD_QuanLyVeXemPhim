@@ -4,7 +4,10 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 
+import Entity.KhachHang;
 import Entity.NhanVien;
 
 public class NhanVienDAO {
@@ -14,6 +17,30 @@ public class NhanVienDAO {
 		this.conn = conn;
 	}
 	
+	public List<NhanVien> layTatCaNhanVien() {
+        String sql = "SELECT * FROM nhan_vien";
+        List<NhanVien> list = new ArrayList();
+
+        try (PreparedStatement pst = conn.prepareStatement(sql);
+        		ResultSet rs = pst.executeQuery()) {
+            while (rs.next()) {
+                NhanVien nv = new NhanVien();
+                nv.setMaNhanVien(rs.getInt("maNhanVien"));
+                nv.setTenNhanVien(rs.getString("tenNhanVien"));
+                nv.setSDT(rs.getString("SDT"));
+                nv.setEmail(rs.getString("email"));
+                nv.setTaiKhoan(rs.getString("taiKhoan"));
+                nv.setMatKhau(rs.getString("matKhau"));
+                list.add(nv);
+            }
+            return list;
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+            System.err.println("Lỗi khi lấy tất cả nhân viên" + e.getMessage());
+        }
+        return list;
+    }
 	
 	public boolean taoNhanVien(NhanVien nhanVien) {
 		String sql = "INSERT INTO nhan_vien (tenNhanVien, SDT, email, taiKhoan, matKhau) VALUES (?, ?, ?, ?, ?);";				

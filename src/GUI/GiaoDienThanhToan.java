@@ -707,7 +707,7 @@ public class GiaoDienThanhToan extends JFrame implements ActionListener{
 		try {
 			conn = ConnectDB.getConnection();
 			PhuongThucThanhToanDAO phuongThucThanhToanDAO = new PhuongThucThanhToanDAO(conn);
-			return phuongThucThanhToanDAO.getAll();
+			return phuongThucThanhToanDAO.layTatCaPTTT();
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

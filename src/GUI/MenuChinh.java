@@ -22,9 +22,8 @@ public class MenuChinh extends JMenuBar {
         itemMuaVe.addActionListener(new ActionListener() {
           @Override
           public void actionPerformed(ActionEvent e) {
-              new GiaoDienChonPhim().setVisible(true);;
+              new GiaoDienChonPhim().setVisible(true);
               parentFrame.dispose(); 
-              
           }
       });
         
@@ -51,6 +50,13 @@ public class MenuChinh extends JMenuBar {
         // Menu Hóa đơn
         menuHoaDon = new JMenu("Hóa Đơn");
         itemQuanLyHoaDon = new JMenuItem("Quản lý hóa đơn");
+        itemQuanLyHoaDon.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                new GiaoDienQuanLyHoaDon().setVisible(true);
+                parentFrame.dispose(); 
+            }
+        });
         menuHoaDon.add(itemQuanLyHoaDon);
         
       //Menu Phim

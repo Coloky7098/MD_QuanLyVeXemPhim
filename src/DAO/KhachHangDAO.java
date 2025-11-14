@@ -4,6 +4,8 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 
 import Entity.KhachHang;
 
@@ -78,5 +80,27 @@ public class KhachHangDAO {
             e.printStackTrace();
         }
         return null;
+    }
+
+	public List<KhachHang> layTatCaKhachHang() {
+        String sql = "SELECT * FROM khach_hang ORDER BY maKH";
+        List<KhachHang> list = new ArrayList();
+
+        try (PreparedStatement pst = conn.prepareStatement(sql);
+        		ResultSet rs = pst.executeQuery()) {
+            while (rs.next()) {
+                KhachHang kh = new KhachHang();
+                kh.setMaKH(rs.getInt("maKH"));
+                kh.setTenKH(rs.getString("tenKH"));
+                kh.setSDT(rs.getString("SDT"));
+                list.add(kh);
+            }
+            return list;
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+            System.err.println("Lỗi khi lấy tất cả khách hàng" + e.getMessage());
+        }
+        return list;
     }
 }

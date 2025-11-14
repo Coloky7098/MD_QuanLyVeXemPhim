@@ -274,8 +274,7 @@ public class GiaoDienQuanLyPhim extends JPanel implements ActionListener {
     private void onRowSelected(int row){
         if(row<0) return;
         int ma = (Integer)model.getValueAt(row,0);
-        Phim p = phimDAO.search(String.valueOf(ma)).stream()
-            .filter(x->x.getMaPhim()==ma).findFirst().orElse(null);
+        Phim p = phimDAO.layPhimBangMaPhim(ma);
         if(p==null) return;
 
         txtMaPhim.setText(String.valueOf(p.getMaPhim()));

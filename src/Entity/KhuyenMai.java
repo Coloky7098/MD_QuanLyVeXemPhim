@@ -1,6 +1,7 @@
 package Entity;
 
 import java.sql.Date;
+import java.util.Objects;
 
 public class KhuyenMai {
 	private int maKM;
@@ -91,7 +92,21 @@ public class KhuyenMai {
 		this.trangThai = trangThai;
 	}
 	 
-	 
+	@Override
+	public String toString() {
+		return this.tenKM;
+	}
 	
-	 
+	@Override
+	public boolean equals(Object o) {
+	    if (this == o) return true;
+	    if (!(o instanceof KhuyenMai)) return false;
+	    KhuyenMai km = (KhuyenMai) o;
+	    return maKM == km.maKM;
+	}
+
+	@Override
+	public int hashCode() {
+	    return Objects.hash(maKM);
+	}
 }

@@ -1,5 +1,6 @@
 package Entity;
 
+import java.util.Objects;
 
 public class KhachHang {
 	private Integer maKH;
@@ -40,6 +41,23 @@ public class KhachHang {
 	public void setSDT(String SDT) {
 		this.SDT = SDT;
 	}
+
+	@Override
+	public String toString() {
+		return this.tenKH;
+	}
     
-    
+	@Override
+	public boolean equals(Object o) {
+	    if (this == o) return true;
+	    if (o == null || getClass() != o.getClass()) return false;
+	    KhachHang that = (KhachHang) o;
+	    return maKH == that.maKH;
+	}
+
+	@Override
+	public int hashCode() {
+	    return Objects.hash(maKH);
+	}
+
 }

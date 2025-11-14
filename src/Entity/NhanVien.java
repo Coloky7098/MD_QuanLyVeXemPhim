@@ -1,5 +1,7 @@
 package Entity;
 
+import java.util.Objects;
+
 public class NhanVien {
 	private Integer maNhanVien;
     private String tenNhanVien;
@@ -70,5 +72,21 @@ public class NhanVien {
 		this.matKhau = matKhau;
 	}
     
-    
+	@Override
+	public String toString() {
+		return this.tenNhanVien;
+	}
+	
+	@Override
+	public boolean equals(Object o) {
+	    if (this == o) return true;
+	    if (!(o instanceof NhanVien)) return false;
+	    NhanVien nv = (NhanVien) o;
+	    return maNhanVien == nv.maNhanVien;
+	}
+
+	@Override
+	public int hashCode() {
+	    return Objects.hash(maNhanVien);
+	}
 }

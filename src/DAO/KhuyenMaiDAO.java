@@ -4,7 +4,10 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 
+import Entity.KhachHang;
 import Entity.KhuyenMai;
 
 public class KhuyenMaiDAO {
@@ -14,6 +17,34 @@ public class KhuyenMaiDAO {
 	public KhuyenMaiDAO(Connection conn) {
 		this.conn = conn;
 	}
+	
+	public List<KhuyenMai> layTatCaKhuyenMai() {
+        String sql = "SELECT * FROM khuyen_mai";
+        List<KhuyenMai> list = new ArrayList();
+
+        try (PreparedStatement pst = conn.prepareStatement(sql);
+        		ResultSet rs = pst.executeQuery()) {
+            while (rs.next()) {
+            	KhuyenMai km = new KhuyenMai(
+                        rs.getInt("maKM"),
+                        rs.getString("tenKM"),
+                        rs.getString("maCode"),
+                        rs.getDouble("giaTriKM"),
+                        rs.getDate("ngayBatDau"),
+                        rs.getDate("ngayKetThuc"),
+                        rs.getString("moTa"),
+                        rs.getBoolean("trangThai")
+                );
+                list.add(km);
+            }
+            return list;
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+            System.err.println("Lỗi khi lấy tất cả khuyến mãi" + e.getMessage());
+        }
+        return list;
+    }
 	
 	public KhuyenMai findByCode(String code) throws SQLException {
         
@@ -37,7 +68,7 @@ public class KhuyenMaiDAO {
         return null;
     }
 
-public KhuyenMai layKhuyenMaiBangMa(int maKM) throws SQLException {
+	public KhuyenMai layKhuyenMaiBangMa(int maKM) throws SQLException {
         
         String sql = "SELECT * FROM khuyen_mai WHERE maKM = ?";
         try (PreparedStatement ps = conn.prepareStatement(sql)) {

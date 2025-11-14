@@ -1,5 +1,7 @@
 package Entity;
 
+import java.util.Objects;
+
 public class PhuongThucThanhToan {
 	private int maPTTT;
 	private String tenPTTT;
@@ -50,5 +52,22 @@ public class PhuongThucThanhToan {
 		this.phiGiaoDich = phiGiaoDich;
 	}
 	
+	@Override
+	public String toString() {
+		return this.tenPTTT;
+	}
 	
+	@Override
+	public boolean equals(Object o) {
+	    if (this == o) return true;
+	    if (!(o instanceof PhuongThucThanhToan)) return false;
+	    PhuongThucThanhToan p = (PhuongThucThanhToan) o;
+	    return maPTTT == p.maPTTT;
+	}
+
+	@Override
+	public int hashCode() {
+	    return Objects.hash(maPTTT);
+	}
+
 }
