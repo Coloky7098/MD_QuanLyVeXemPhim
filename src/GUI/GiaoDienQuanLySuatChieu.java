@@ -3,6 +3,7 @@ package GUI;
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import java.awt.*;
+import java.sql.Connection;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
@@ -30,14 +31,22 @@ public class GiaoDienQuanLySuatChieu extends JPanel{
     private JComboBox<Phim> cbPhim;
     private JComboBox<PhongChieu> cbPhongChieu;
 	private JComboBox<String> cbGio, cbPhut;
-
+	
+	private static final Color PRI_COLOR = new Color(252, 247, 223);
+    private static final Color SEC_COLOR = new Color(253, 252, 241);
+    private static final Color RED_COLOR = new Color(212, 54, 37);
+    
+    private static final Color TEXT_COLOR = Color.BLACK;
+    private static final Color BTN_COLOR = Color.WHITE;
+    
     public GiaoDienQuanLySuatChieu() {
     	setLayout(new BorderLayout(10, 10));
         // DAO với kết nối
         try {
-            phimDAO = new PhimDAO(ConnectDB.getConnection());
-            suatChieuDAO = new SuatChieuDAO(ConnectDB.getConnection());
-            phongChieuDAO = new PhongChieuDAO(ConnectDB.getConnection());
+        	Connection conn = ConnectDB.getConnection();
+            phimDAO = new PhimDAO(conn);
+            suatChieuDAO = new SuatChieuDAO(conn);
+            phongChieuDAO = new PhongChieuDAO(conn);
         } catch (Exception e) {
             e.printStackTrace();
             JOptionPane.showMessageDialog(this, "Không thể kết nối DB: " + e.getMessage());
@@ -46,13 +55,16 @@ public class GiaoDienQuanLySuatChieu extends JPanel{
 
         // ===== Center panel: scrollable phim cards =====
         panelCenterMain = new JPanel();
+        panelCenterMain.setBackground(PRI_COLOR);
         panelCenterMain.setLayout(new BoxLayout(panelCenterMain, BoxLayout.Y_AXIS));
         JScrollPane scroll = new JScrollPane(panelCenterMain);
+        scroll.getVerticalScrollBar().setUnitIncrement(8); // Tăng tốc độ cuộn
 
         loadPhimCards();
 
         // ===== East panel: CRUD form =====
         panelEast = new JPanel();
+        panelEast.setBackground(PRI_COLOR);
         panelEast.setLayout(new BoxLayout(panelEast, BoxLayout.Y_AXIS));
         panelEast.setBorder(new EmptyBorder(10,10,10,10));
         panelEast.setPreferredSize(new Dimension(350,0));
@@ -70,6 +82,7 @@ public class GiaoDienQuanLySuatChieu extends JPanel{
     	lblQuanLySuatChieu.setAlignmentX(Component.CENTER_ALIGNMENT);    // căn giữa theo BoxLayout
     	panelEast.add(lblQuanLySuatChieu);
     	panelEast.add(Box.createVerticalStrut(15)); // thêm khoảng trống dưới tiêu đề
+    	panelEast.setBackground(PRI_COLOR);
     	
     	// Mã Suất Chiếu
         panelEast.add(createFieldPanel("Mã Suất Chiếu:", txtMaSuatChieu = new JTextField(15)));
@@ -91,6 +104,7 @@ public class GiaoDienQuanLySuatChieu extends JPanel{
         // Giờ Chiếu: 2 comboBox (giờ + phút)
         JPanel gioPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 5, 0));
         gioPanel.add(new JLabel("Giờ Chiếu:"));
+        gioPanel.setBackground(PRI_COLOR);
         cbGio = new JComboBox<>();
         for (int i = 0; i < 25; i++) cbGio.addItem(String.format("%02d", i));
         gioPanel.add(cbGio);
@@ -104,10 +118,11 @@ public class GiaoDienQuanLySuatChieu extends JPanel{
 
         // Nút CRUD cùng dòng
         JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 10, 0));
-        JButton btnThem = new JButton("Thêm");
-        JButton btnSua = new JButton("Sửa");
-        JButton btnXoa = new JButton("Xóa");
-        JButton btnLuu = new JButton("Lưu");
+        buttonPanel.setBackground(PRI_COLOR);
+        JButton btnThem = taoBtn("Thêm");
+        JButton btnSua = taoBtn("Sửa");
+        JButton btnXoa = taoBtn("Xóa");
+        JButton btnLuu = taoBtn("Lưu");
         buttonPanel.add(btnThem);
         buttonPanel.add(btnSua);
         buttonPanel.add(btnXoa);
@@ -132,6 +147,7 @@ public class GiaoDienQuanLySuatChieu extends JPanel{
 
     private JPanel createFieldPanel(String label, JComponent field) {
         JPanel panel = new JPanel(new FlowLayout(FlowLayout.LEFT,5,5));
+        panel.setBackground(PRI_COLOR);
         JLabel lbl = new JLabel(label);
         lbl.setPreferredSize(new Dimension(120,25));
         panel.add(lbl);
@@ -153,7 +169,7 @@ public class GiaoDienQuanLySuatChieu extends JPanel{
         JPanel card = new JPanel();
         card.setLayout(new BorderLayout(10,10));
         card.setBorder(new EmptyBorder(10,10,10,10));
-        card.setBackground(Color.WHITE);
+        card.setBackground(SEC_COLOR);
 
         // ===== Poster =====
         JLabel lblPoster = new JLabel("No Image", JLabel.CENTER);
@@ -190,7 +206,7 @@ public class GiaoDienQuanLySuatChieu extends JPanel{
      // ===== Info Panel =====
         JPanel infoPanel = new JPanel();
         infoPanel.setLayout(new BoxLayout(infoPanel, BoxLayout.Y_AXIS));
-        infoPanel.setBackground(Color.WHITE);
+        infoPanel.setBackground(SEC_COLOR);
 
         JLabel lblTen = new JLabel("Tên phim: " + phim.getTenPhim());
         lblTen.setAlignmentX(Component.LEFT_ALIGNMENT);
@@ -205,7 +221,6 @@ public class GiaoDienQuanLySuatChieu extends JPanel{
         infoPanel.add(lblTheLoai);
 
         // ===== Giá cơ bản =====
-        SuatChieuDAO suatChieuDAO = new SuatChieuDAO();
         List<SuatChieu> scList = suatChieuDAO.getAllSuatChieu(phim.getMaPhim());
 
         String giaVeText = "—";
@@ -228,6 +243,7 @@ public class GiaoDienQuanLySuatChieu extends JPanel{
 
         // ===== Suất chiếu =====
         JPanel showtimesPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 6, 6));
+        showtimesPanel.setBackground(PRI_COLOR);
         showtimesPanel.setAlignmentX(Component.LEFT_ALIGNMENT);
 
         for (SuatChieu sc : scList) {
@@ -393,5 +409,15 @@ public class GiaoDienQuanLySuatChieu extends JPanel{
         }
     }
 
-
+    private JButton taoBtn(String ten) {
+    	JButton btn = new JButton(ten);
+    	btn.setBackground(RED_COLOR);
+    	btn.setForeground(BTN_COLOR);
+    	btn.setPreferredSize(new Dimension(90, 40));
+    	btn.setFont(new Font("Segoe UI", Font.BOLD, 14));
+    	btn.setOpaque(true);
+    	btn.setBorderPainted(false);
+    	btn.setContentAreaFilled(true);
+    	return btn;
+    }
 }

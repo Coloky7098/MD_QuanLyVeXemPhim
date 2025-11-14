@@ -58,6 +58,13 @@ public class GiaoDienQuanLyPhim extends JPanel implements ActionListener {
 
     // Selected image path
     private String selectedImgPath = null;
+    
+    private static final Color PRI_COLOR = new Color(252, 247, 223);
+    private static final Color SEC_COLOR = new Color(253, 252, 241);
+    private static final Color RED_COLOR = new Color(212, 54, 37);
+    
+    private static final Color TEXT_COLOR = Color.BLACK;
+    private static final Color BTN_COLOR = Color.WHITE;
 
     private NhanVien nhanVien;
     public GiaoDienQuanLyPhim(NhanVien nhanVien) {
@@ -73,7 +80,7 @@ public class GiaoDienQuanLyPhim extends JPanel implements ActionListener {
     	
         setLayout(new BorderLayout(10,10));
         setBorder(new EmptyBorder(10,10,10,10));
-        setBackground(new Color(245,245,245));
+        setBackground(PRI_COLOR);
 
         // ===== Top bar search + buttons =====
         add(buildTopBar(), BorderLayout.NORTH);
@@ -89,20 +96,20 @@ public class GiaoDienQuanLyPhim extends JPanel implements ActionListener {
     // ===== Top search bar =====
     private JPanel buildTopBar() {
         JPanel panel = new JPanel(new BorderLayout(8,8));
-        panel.setBackground(new Color(245,245,245));
+        panel.setBackground(PRI_COLOR);
 
         JPanel left = new JPanel(new GridLayout(1,2,6,6));
-        left.setBackground(new Color(245,245,245));
+        left.setBackground(PRI_COLOR);
         left.add(new JLabel("Tìm:"));
         left.add(txtSearch);
         panel.add(left, BorderLayout.CENTER);
 
         JPanel right = new JPanel(new FlowLayout(FlowLayout.RIGHT, 8,0));
-        right.setBackground(new Color(245,245,245));
+        right.setBackground(PRI_COLOR);
 
-        btnBack = new JButton("Quay lại");
-        btnFind = new JButton("Tìm");
-        btnReload = new JButton("Tải lại");
+        btnBack = taoBtn("Quay lại");
+        btnFind = taoBtn("Tìm");
+        btnReload = taoBtn("Tải lại");
 
         btnBack.addActionListener(this);
         btnFind.addActionListener(this);
@@ -127,9 +134,10 @@ public class GiaoDienQuanLyPhim extends JPanel implements ActionListener {
         JSplitPane topSplit = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT);
         topSplit.setResizeWeight(0.7);
         topSplit.setBorder(null);
-
+        topSplit.setBackground(SEC_COLOR);
+        
         JPanel formPanel = new JPanel(new GridBagLayout());
-        formPanel.setBackground(Color.WHITE);
+        formPanel.setBackground(SEC_COLOR);
         formPanel.setBorder(new CompoundBorder(
                 new LineBorder(Color.LIGHT_GRAY,1,true),
                 new EmptyBorder(10,10,10,10)
@@ -156,16 +164,12 @@ public class GiaoDienQuanLyPhim extends JPanel implements ActionListener {
 
         // Buttons
         JPanel actionPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT,8,8));
-        actionPanel.setBackground(Color.WHITE);
-        btnNew = new JButton("Thêm"); btnSave = new JButton("Lưu");
-        btnUpdate = new JButton("Sửa"); btnDelete = new JButton("Xoá");
+        actionPanel.setBackground(SEC_COLOR);
+        btnNew = taoBtn("Thêm"); btnSave = taoBtn("Lưu");
+        btnUpdate = taoBtn("Sửa"); btnDelete = taoBtn("Xoá");
         btnNew.addActionListener(this); btnSave.addActionListener(this);
         btnUpdate.addActionListener(this); btnDelete.addActionListener(this);
 
-        btnNew.setBackground(new Color(46,204,113)); btnNew.setForeground(Color.WHITE);
-        btnSave.setBackground(new Color(52,152,219)); btnSave.setForeground(Color.WHITE);
-        btnUpdate.setBackground(new Color(241,196,15)); btnUpdate.setForeground(Color.WHITE);
-        btnDelete.setBackground(new Color(231,76,60)); btnDelete.setForeground(Color.WHITE);
         for(JButton b: new JButton[]{btnNew,btnSave,btnUpdate,btnDelete}) b.setFocusPainted(false);
 
         actionPanel.add(btnNew); actionPanel.add(btnSave);
@@ -180,7 +184,7 @@ public class GiaoDienQuanLyPhim extends JPanel implements ActionListener {
         lblPoster.setBorder(new LineBorder(Color.LIGHT_GRAY));
         lblPoster.setHorizontalAlignment(SwingConstants.CENTER);
         lblPoster.setVerticalAlignment(SwingConstants.CENTER);
-
+        
         topSplit.setLeftComponent(formPanel);
         topSplit.setRightComponent(lblPoster);
 
@@ -367,4 +371,16 @@ public class GiaoDienQuanLyPhim extends JPanel implements ActionListener {
         else if(o.equals(btnDelete)) doDelete();
     }
 
+    private JButton taoBtn(String ten) {
+    	JButton btn = new JButton(ten);
+    	btn.setBackground(RED_COLOR);
+    	btn.setForeground(BTN_COLOR);
+    	btn.setPreferredSize(new Dimension(90, 40));
+    	btn.setFont(new Font("Segoe UI", Font.BOLD, 14));
+    	btn.addActionListener(this);
+    	btn.setOpaque(true);
+    	btn.setBorderPainted(false);
+    	btn.setContentAreaFilled(true);
+    	return btn;
+    }
 }

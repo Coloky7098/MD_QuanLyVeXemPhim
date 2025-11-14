@@ -83,7 +83,6 @@ public class GiaoDienQuanLyHoaDon extends JFrame implements ActionListener {
 		this.setJMenuBar(menuBar);
 		MenuToggleUtil.addToggleSupport(this, menuBar);
 		
-		
         setBackground(new Color(245, 245, 245));
 
         add(buildTopBar(), BorderLayout.NORTH);
@@ -140,14 +139,18 @@ public class GiaoDienQuanLyHoaDon extends JFrame implements ActionListener {
 
         JSplitPane top = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT);
         top.setResizeWeight(1);
-
+        
         JPanel formPanel = buildFormPanel();
+
         top.setLeftComponent(formPanel);
 
         JScrollPane tableScroll = new JScrollPane(table);
         tableScroll.setBorder(new EmptyBorder(10, 20, 10, 20));
-//        tableScroll.setBackground(PRI_COLOR);
+        table.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         table.setRowHeight(25);
+        table.getTableHeader().setFont(new Font("Segoe UI",Font.BOLD,14));
+        table.setFont(new Font("Segoe UI",Font.PLAIN,13));
+        table.setGridColor(Color.LIGHT_GRAY);
         table.getSelectionModel().addListSelectionListener(e -> {
             if (!e.getValueIsAdjusting()) onRowSelected(table.getSelectedRow());
         });
