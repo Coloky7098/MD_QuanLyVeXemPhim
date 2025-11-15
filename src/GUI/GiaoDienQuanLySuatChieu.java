@@ -6,8 +6,11 @@ import java.awt.*;
 import java.sql.Connection;
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
+import java.util.Set;
+import java.util.TreeSet;
 
 import ConnectDB.ConnectDB;
 import DAO.PhimDAO;
@@ -25,12 +28,18 @@ public class GiaoDienQuanLySuatChieu extends JPanel{
     private PhimDAO phimDAO;
     private SuatChieuDAO suatChieuDAO;
     private PhongChieuDAO phongChieuDAO;
+ 
 
     // East form components
     private JTextField txtMaSuatChieu, txtNgayChieu, txtGiaVe;
     private JComboBox<Phim> cbPhim;
     private JComboBox<PhongChieu> cbPhongChieu;
 	private JComboBox<String> cbGio, cbPhut;
+	private JPanel datePanel; 
+	private String selectedDate; 
+	private JButton btnDateSelected;
+	private JButton btnSuatChieuSelected; 
+	private java.util.Map<Phim, JPanel> phimToShowtimes = new java.util.HashMap<>();
 	
 	private static final Color PRI_COLOR = new Color(252, 247, 223);
     private static final Color SEC_COLOR = new Color(253, 252, 241);
@@ -120,11 +129,9 @@ public class GiaoDienQuanLySuatChieu extends JPanel{
         JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 10, 0));
         buttonPanel.setBackground(PRI_COLOR);
         JButton btnThem = taoBtn("Thêm");
-        JButton btnSua = taoBtn("Sửa");
         JButton btnXoa = taoBtn("Xóa");
         JButton btnLuu = taoBtn("Lưu");
         buttonPanel.add(btnThem);
-        buttonPanel.add(btnSua);
         buttonPanel.add(btnXoa);
         buttonPanel.add(btnLuu);
         panelEast.add(Box.createVerticalStrut(10));
@@ -132,15 +139,6 @@ public class GiaoDienQuanLySuatChieu extends JPanel{
 
         // ActionListener
         btnThem.addActionListener(e -> clearForm());
-        btnSua.addActionListener(e -> {
-            if (!txtMaSuatChieu.getText().isEmpty()) {
-                int maSC = Integer.parseInt(txtMaSuatChieu.getText());
-                SuatChieu sc = suatChieuDAO.laySuatChieuBangMa(maSC);
-                loadSelectedSuatChieuToForm(sc);
-            } else {
-                JOptionPane.showMessageDialog(this, "Vui lòng chọn một suất chiếu để sửa!");
-            }
-        });
         btnXoa.addActionListener(e -> deleteSelectedSuatChieu());
         btnLuu.addActionListener(e -> saveSuatChieu());
     }
@@ -157,15 +155,96 @@ public class GiaoDienQuanLySuatChieu extends JPanel{
 
     private void loadPhimCards() {
         panelCenterMain.removeAll();
-        for (Phim phim : phimDAO.getAllPhim()) {
-            panelCenterMain.add(createPhimCard(phim));
+        phimToShowtimes.clear();
+
+        // Lấy tất cả phim
+        List<Phim> allPhim = phimDAO.getAllPhim();
+
+        // Lấy tất cả suất chiếu từ tất cả phim để tạo datePanel
+        List<SuatChieu> allSuatChieu = new ArrayList<>();
+        for (Phim p : allPhim) {
+            allSuatChieu.addAll(suatChieuDAO.getAllSuatChieu(p.getMaPhim()));
+        }
+
+        // Tạo datePanel chung
+        createDatePanel(allSuatChieu);
+
+        // Tạo card cho từng phim
+        for (Phim p : allPhim) {
+            List<SuatChieu> suatChieuCuaPhim = suatChieuDAO.getAllSuatChieu(p.getMaPhim());
+            JPanel showtimes = new JPanel(new FlowLayout(FlowLayout.LEFT, 6, 6));
+            showtimes.setBackground(PRI_COLOR);
+            phimToShowtimes.put(p, showtimes);
+
+            panelCenterMain.add(createPhimCard(p, showtimes, suatChieuCuaPhim));
             panelCenterMain.add(new JSeparator(SwingConstants.HORIZONTAL));
         }
+
         panelCenterMain.revalidate();
         panelCenterMain.repaint();
     }
 
-    private JPanel createPhimCard(Phim phim) {
+
+
+    // === Tạo panel chọn ngày ===
+    private void createDatePanel(List<SuatChieu> allSuatChieu) {
+        if (datePanel != null) panelCenterMain.remove(datePanel);
+        datePanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 6, 6));
+        datePanel.setBackground(SEC_COLOR);
+
+        Set<String> uniqueDates = new TreeSet<>();
+        for (SuatChieu sc : allSuatChieu) uniqueDates.add(sc.getNgayChieu().toString());
+
+        JButton firstButton = null;
+        for (String d : uniqueDates) {
+            JButton btn = new JButton(d);
+            btn.setFocusPainted(false);
+            btn.setBackground(SEC_COLOR);
+            btn.addActionListener(e -> {
+                selectedDate = d;
+                // Reset màu cũ
+                if (btnDateSelected != null) btnDateSelected.setBackground(SEC_COLOR);
+                // Set màu mới
+                btn.setBackground(Color.YELLOW);
+                btnDateSelected = btn;
+
+                updateAllShowtimes();
+            });
+            datePanel.add(btn);
+            if (firstButton == null) firstButton = btn;
+        }
+
+        panelCenterMain.add(datePanel, 0);
+
+        if (firstButton != null) firstButton.doClick();
+    }
+    
+    private void updateAllShowtimes() {
+        for (Phim p : phimToShowtimes.keySet()) {
+            JPanel showtimes = phimToShowtimes.get(p);
+            showtimes.removeAll();
+            List<SuatChieu> scList = suatChieuDAO.getAllSuatChieu(p.getMaPhim());
+            for (SuatChieu sc : scList) {
+                if (sc.getNgayChieu().toString().equals(selectedDate)) {
+                    JButton btnSC = new JButton(sc.getGioChieu().toString());
+                    btnSC.setBackground(SEC_COLOR);
+                    btnSC.addActionListener(ev -> {
+                        loadSelectedSuatChieuToForm(sc);
+                        // Reset màu nút cũ
+                        if (btnSuatChieuSelected != null) btnSuatChieuSelected.setBackground(SEC_COLOR);
+                        // Highlight nút hiện tại
+                        btnSC.setBackground(Color.YELLOW);
+                        btnSuatChieuSelected = btnSC;
+                    });
+                    showtimes.add(btnSC);
+                }
+            }
+            showtimes.revalidate();
+            showtimes.repaint();
+        }
+    }
+
+    private JPanel createPhimCard(Phim phim, JPanel showtimesPanel, List<SuatChieu> scList) {
         JPanel card = new JPanel();
         card.setLayout(new BorderLayout(10,10));
         card.setBorder(new EmptyBorder(10,10,10,10));
@@ -221,8 +300,6 @@ public class GiaoDienQuanLySuatChieu extends JPanel{
         infoPanel.add(lblTheLoai);
 
         // ===== Giá cơ bản =====
-        List<SuatChieu> scList = suatChieuDAO.getAllSuatChieu(phim.getMaPhim());
-
         String giaVeText = "—";
         if (scList != null && !scList.isEmpty()) {
             Double giaVe = scList.get(0).getGiaVeCoBan();
@@ -242,22 +319,7 @@ public class GiaoDienQuanLySuatChieu extends JPanel{
         infoPanel.add(Box.createRigidArea(new Dimension(0, 6)));
 
         // ===== Suất chiếu =====
-        JPanel showtimesPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 6, 6));
-        showtimesPanel.setBackground(PRI_COLOR);
         showtimesPanel.setAlignmentX(Component.LEFT_ALIGNMENT);
-
-        for (SuatChieu sc : scList) {
-        	JButton btnSC = new JButton(sc.getGioChieu().toString());
-            btnSC.setFocusPainted(false);
-
-         // ===== Thêm listener =====
-            btnSC.addActionListener(ev -> {
-            	SuatChieu scSelected = suatChieuDAO.laySuatChieuBangMa(sc.getMaSuatChieu());
-                loadSelectedSuatChieuToForm(scSelected);
-            });
-
-            showtimesPanel.add(btnSC);
-        }
         infoPanel.add(showtimesPanel);
         card.add(infoPanel, BorderLayout.CENTER);
         return card;

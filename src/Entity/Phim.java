@@ -1,6 +1,7 @@
 package Entity;
 
 import java.time.LocalDate;
+import java.util.List;
 
 public class Phim {
 	private Integer maPhim;
@@ -13,6 +14,7 @@ public class Phim {
     private LocalDate ngayKhoiChieu;
     private String img;
     private TheLoai theLoai; // Quan hệ
+    private List<SuatChieu> listSuatChieu;
     
 	public Phim(Integer maPhim, String tenPhim, String moTa, String doTuoi, String quocGia, Integer thoiLuong,
 			String daoDien, LocalDate ngayKhoiChieu, String img, TheLoai theLoai) {
@@ -28,6 +30,11 @@ public class Phim {
 		this.img = img;
 		this.theLoai = theLoai;
 	}
+	public Phim(Integer maPhim, String tenPhim, List<SuatChieu> listSuatChieu) {
+        this.maPhim = maPhim;
+        this.tenPhim = tenPhim;
+        this.listSuatChieu = listSuatChieu;
+    }
     
 	public Phim() {
 		super();
@@ -111,6 +118,13 @@ public class Phim {
 
 	public void setTheLoai(TheLoai theLoai) {
 		this.theLoai = theLoai;
+	}
+	
+	public List<SuatChieu> getListSuatChieu() {
+		return listSuatChieu;
+	}
+	public void setListSuatChieu(List<SuatChieu> listSuatChieu) {
+		this.listSuatChieu = listSuatChieu;
 	}
 	@Override
 	public boolean equals(Object obj) {

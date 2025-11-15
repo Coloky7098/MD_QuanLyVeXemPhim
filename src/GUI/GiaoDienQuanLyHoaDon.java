@@ -262,7 +262,7 @@ public class GiaoDienQuanLyHoaDon extends JFrame implements ActionListener {
                     h.getSoLuongNuoc(),
                     h.getKhuyenMai() == null ? "" : h.getKhuyenMai().getTenKM(),
                     h.getPhuongThucThanhToan() == null ? "" : h.getPhuongThucThanhToan().getTenPTTT(),
-                    h.tinhTong(listCTHD)		
+                    String.format("%,.0f đ", h.tinhTong(listCTHD))
             });
         }
     }
@@ -374,6 +374,8 @@ public class GiaoDienQuanLyHoaDon extends JFrame implements ActionListener {
         cboPTTT.setSelectedItem(h.getPhuongThucThanhToan());
         
         List<ChiTietHoaDon> listCTHD = new ChiTietHoaDonDAO(conn).layChitiethoadon(h.getMaHD());
+        
+        txtTongTien.setText(String.format("%,.0f đ", h.tinhTong(listCTHD)));
         pnlHoaDon = taopnlhoaDon(h, listCTHD);
 
         // Xóa nội dung cũ

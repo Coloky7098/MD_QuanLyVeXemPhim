@@ -89,6 +89,12 @@ public class MenuChinh extends JMenuBar {
         // Menu Phòng Chiếu
         menuPhongChieu = new JMenu("Phòng Chiếu");
         itemQuanLyPhongChieu = new JMenuItem("Quản lý phòng chiếu");
+        itemQuanLyPhongChieu.addActionListener(e -> {
+            GiaoDienQuanLyPhongChieu panel = new GiaoDienQuanLyPhongChieu();
+            parentFrame.setContentPane(panel);
+            parentFrame.revalidate();
+            parentFrame.repaint();
+        });
         menuPhongChieu.add(itemQuanLyPhongChieu);
         
         // Menu Hóa đơn

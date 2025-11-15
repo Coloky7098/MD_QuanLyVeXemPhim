@@ -236,7 +236,8 @@ public class GiaoDienQuanLyKhachHang extends JFrame implements ActionListener {
         	ChiTietHoaDonDAO chiTietHoaDonDAO = new ChiTietHoaDonDAO(conn);
 			List<ChiTietHoaDon> listCTHD = chiTietHoaDonDAO.layChitiethoadon(hd.getMaHD());
 			modelHD.addRow(new Object[]{
-					hd.getMaHD(),hd.getNgayLapHoaDon(), hd.getKhachHang(), hd.getNhanVien(), hd.tinhTong(listCTHD)
+					hd.getMaHD(),hd.getNgayLapHoaDon(), hd.getKhachHang(), hd.getNhanVien()
+					, String.format("%,.0f đ", hd.tinhTong(listCTHD))
 			});
         }
     }

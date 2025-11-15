@@ -36,7 +36,6 @@ public class GiaoDienChonPhim extends JFrame implements ActionListener{
     private static final Color BTN_COLOR = Color.WHITE;
 	
     NhanVien nhanVien;
-    
 	public GiaoDienChonPhim(NhanVien nhanVien) {
 		super();
 		this.nhanVien = nhanVien;
@@ -214,7 +213,7 @@ public class GiaoDienChonPhim extends JFrame implements ActionListener{
 
 	private void chonPhim(Phim phim, Component component) {
 		// Tạo và hiển thị màn hình chọn suất chiếu
-	    GiaoDienChonGhe frm = new GiaoDienChonGhe(phim, nhanVien);
+	    GiaoDienChonSuatChieu frm = new GiaoDienChonSuatChieu(phim, nhanVien);
 	    frm.setVisible(true);
 	    
 	    // Đóng màn hình hiện tại

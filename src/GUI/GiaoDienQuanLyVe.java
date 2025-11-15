@@ -299,7 +299,7 @@ public class GiaoDienQuanLyVe extends JFrame implements ActionListener {
                     v.getSuatChieu() == null ? "" : v.getSuatChieu().getPhim().getTenPhim(),
                     v.getSuatChieu() == null ? "" : v.getSuatChieu().getGioChieu(),
                     v.getTenGhe(),
-                    v.getGiaVe(),
+                    String.format("%,.0f đ", v.getGiaVe()),
                     v.getNgayDat() == null ? "" : v.getNgayDat().toString(),
                     v.getNgayChieu() == null ? "" : v.getNgayChieu().toString(),
                     v.getGioChieu() == null ? "" : v.getGioChieu().toString()
@@ -483,7 +483,7 @@ public class GiaoDienQuanLyVe extends JFrame implements ActionListener {
                     v.getSuatChieu() == null ? "" : v.getSuatChieu().getPhim().getTenPhim(),
                     v.getSuatChieu() == null ? "" : v.getSuatChieu().getGioChieu(),
                     v.getTenGhe(),
-                    v.getGiaVe(),
+                    String.format("%,.0f đ", v.getGiaVe()),
                     v.getNgayDat() == null ? "" : v.getNgayDat().toString(),
                     v.getNgayChieu() == null ? "" : v.getNgayChieu().toString(),
                     v.getGioChieu() == null ? "" : v.getGioChieu().toString()

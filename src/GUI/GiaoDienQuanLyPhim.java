@@ -53,8 +53,8 @@ public class GiaoDienQuanLyPhim extends JPanel implements ActionListener {
     private TheLoaiDAO theLoaiDAO;
 
     // Buttons
-    private JButton btnBack, btnFind, btnReload;
-    private JButton btnNew, btnSave, btnUpdate, btnDelete;
+    private JButton btnQuayLai, btnTim, btnTaiLai;
+    private JButton btnThem, btnLuu, btnXoa;
 
     // Selected image path
     private String selectedImgPath = null;
@@ -107,18 +107,18 @@ public class GiaoDienQuanLyPhim extends JPanel implements ActionListener {
         JPanel right = new JPanel(new FlowLayout(FlowLayout.RIGHT, 8,0));
         right.setBackground(PRI_COLOR);
 
-        btnBack = taoBtn("Quay lại");
-        btnFind = taoBtn("Tìm");
-        btnReload = taoBtn("Tải lại");
+        btnQuayLai = taoBtn("Quay lại");
+        btnTim = taoBtn("Tìm");
+        btnTaiLai = taoBtn("Tải lại");
 
-        btnBack.addActionListener(this);
-        btnFind.addActionListener(this);
-        btnReload.addActionListener(this);
+        btnQuayLai.addActionListener(this);
+        btnTim.addActionListener(this);
+        btnTaiLai.addActionListener(this);
         txtSearch.addActionListener(this);
 
-        right.add(btnBack);
-        right.add(btnFind);
-        right.add(btnReload);
+        right.add(btnQuayLai);
+        right.add(btnTim);
+        right.add(btnTaiLai);
 
         panel.add(right, BorderLayout.EAST);
         return panel;
@@ -165,15 +165,15 @@ public class GiaoDienQuanLyPhim extends JPanel implements ActionListener {
         // Buttons
         JPanel actionPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT,8,8));
         actionPanel.setBackground(SEC_COLOR);
-        btnNew = taoBtn("Thêm"); btnSave = taoBtn("Lưu");
-        btnUpdate = taoBtn("Sửa"); btnDelete = taoBtn("Xoá");
-        btnNew.addActionListener(this); btnSave.addActionListener(this);
-        btnUpdate.addActionListener(this); btnDelete.addActionListener(this);
+        btnThem = taoBtn("Thêm"); 
+        btnLuu = taoBtn("Lưu");
+        btnXoa = taoBtn("Xoá");
 
-        for(JButton b: new JButton[]{btnNew,btnSave,btnUpdate,btnDelete}) b.setFocusPainted(false);
+        for(JButton b: new JButton[]{btnThem,btnLuu,btnXoa}) b.setFocusPainted(false);
 
-        actionPanel.add(btnNew); actionPanel.add(btnSave);
-        actionPanel.add(btnUpdate); actionPanel.add(btnDelete);
+        actionPanel.add(btnThem); 
+        actionPanel.add(btnLuu);
+        actionPanel.add(btnXoa);
 
         gc.gridy = r++;
         gc.gridx=0; gc.gridwidth=2;
@@ -330,13 +330,13 @@ public class GiaoDienQuanLyPhim extends JPanel implements ActionListener {
 
     private void doInsert(){
         Phim p = readForm(false); if(p==null) return;
-        try{ phimDAO.insert(p); JOptionPane.showMessageDialog(this,"Đã thêm phim"); reloadTable(); }
+        try{ phimDAO.insert(p); JOptionPane.showMessageDialog(this,"Đã thêm phim thành công"); reloadTable(); }
         catch(Exception ex){ JOptionPane.showMessageDialog(this,"Lỗi thêm: "+ex.getMessage()); }
     }
 
     private void doUpdate(){
         Phim p = readForm(true); if(p==null) return;
-        try{ phimDAO.update(p); JOptionPane.showMessageDialog(this,"Đã cập nhật"); reloadTable(); }
+        try{ phimDAO.update(p); JOptionPane.showMessageDialog(this,"Đã cập nhật phim thành công"); reloadTable(); }
         catch(Exception ex){ JOptionPane.showMessageDialog(this,"Lỗi cập nhật: "+ex.getMessage()); }
     }
 
@@ -359,16 +359,19 @@ public class GiaoDienQuanLyPhim extends JPanel implements ActionListener {
     @Override
     public void actionPerformed(ActionEvent e){
         Object o = e.getSource();
-        if(o.equals(btnBack)){ 
+        if(o.equals(btnQuayLai)){ 
         	new GiaoDienChonPhim(nhanVien).setVisible(true);
         	SwingUtilities.getWindowAncestor(this).dispose(); 
         	}
-        else if(o.equals(btnFind) || o.equals(txtSearch)) search();
-        else if(o.equals(btnReload)) reloadTable();
-        else if(o.equals(btnNew)) clearForm();
-        else if(o.equals(btnSave)) doInsert();
-        else if(o.equals(btnUpdate)) doUpdate();
-        else if(o.equals(btnDelete)) doDelete();
+        else if(o.equals(btnTim) || o.equals(txtSearch)) search();
+        else if(o.equals(btnTaiLai)) reloadTable();
+        else if(o.equals(btnThem)) clearForm();
+        else if(o.equals(btnLuu)) {
+            // Nếu txtMaPhim rỗng => thêm mới, ngược lại => cập nhật
+            if(txtMaPhim.getText().trim().isEmpty()) doInsert();
+            else doUpdate();
+        }
+        else if(o.equals(btnXoa)) doDelete();
     }
 
     private JButton taoBtn(String ten) {
