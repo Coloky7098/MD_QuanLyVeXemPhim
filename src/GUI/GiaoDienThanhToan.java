@@ -613,7 +613,7 @@ public class GiaoDienThanhToan extends JFrame implements ActionListener{
 		    }
 		}
 		if(event.equals(btnQuayLai)) {
-			GiaoDienChonGhe frm = new GiaoDienChonGhe(suatChieuDaChon.getPhim(), nhanVien);
+			GiaoDienChonGhe frm = new GiaoDienChonGhe(suatChieuDaChon.getPhim(),suatChieuDaChon, nhanVien);
 		    frm.setVisible(true);
 		    dispose();
 		}

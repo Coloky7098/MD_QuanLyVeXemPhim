@@ -40,18 +40,27 @@ public class GiaoDienChonGhe extends JFrame {
     private final Color COLOR_SELECTED = Color.YELLOW; // vàng
     private final Color COLOR_BG = Color.WHITE;
 
-    public GiaoDienChonGhe(Phim phim, NhanVien nhanVien) {
-    	this.nhanVien = nhanVien;
-    	loadSuatChieu(phim.getMaPhim());
-        
-    	this.suatChieu = listSuatChieu.get(0);
-        if (suatChieu != null && suatChieu.getGiaVeCoBan() != null) {
-            this.basePrice = suatChieu.getGiaVeCoBan();
+    public GiaoDienChonGhe(Phim phim, SuatChieu suatChieu, NhanVien nhanVien) {
+        this.nhanVien = nhanVien;
+
+        SuatChieuDAO suatChieuDAO = new SuatChieuDAO();
+        this.listSuatChieu = suatChieuDAO.getAllSuatChieu(phim.getMaPhim());
+        if (this.listSuatChieu == null) this.listSuatChieu = new ArrayList<>();
+
+        if (suatChieu != null) {
+            this.suatChieu = suatChieu;
+        } else if (!listSuatChieu.isEmpty()) {
+            this.suatChieu = listSuatChieu.get(0);
         }
+
+        if (this.suatChieu != null && this.suatChieu.getGiaVeCoBan() != null) {
+            this.basePrice = this.suatChieu.getGiaVeCoBan();
+        }
+
         initUI();
         setTitle("Chọn ghế - Quản lý vé xem phim");
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-        setSize(1100, 760);
+        setSize(1400, 800);
         setLocationRelativeTo(null);
     }
 
@@ -65,7 +74,6 @@ public class GiaoDienChonGhe extends JFrame {
 
         JPanel left = new JPanel(new BorderLayout());
         left.setBackground(COLOR_BG);
-        left.add(createTimeSelectorPanel(), BorderLayout.NORTH);
         left.add(createSeatArea(), BorderLayout.CENTER);
 
         infoPanel = createInfoPanel();
@@ -73,44 +81,6 @@ public class GiaoDienChonGhe extends JFrame {
         main.add(infoPanel, BorderLayout.EAST);
 
         getContentPane().add(main, BorderLayout.CENTER);
-    }
-
-    private JPanel createTimeSelectorPanel() {
-        JPanel p = new JPanel(new FlowLayout(FlowLayout.LEFT));
-        p.setBackground(COLOR_BG);
-
-        JLabel lbl = new JLabel("Đổi suất chiếu:");
-        p.add(lbl);
-
-        for (SuatChieu sc : listSuatChieu) {
-            JButton b = new JButton(sc.getGioChieu().toString());
-            b.setFocusPainted(false);
-
-            b.addActionListener(e -> {
-                //Reset lại màu các nút khác
-                for (Component c : p.getComponents()) {
-                    if (c instanceof JButton) {
-                        ((JButton) c).setBackground(null);
-                        ((JButton) c).setForeground(Color.BLACK);
-                    }
-                }
-                //Tô màu nút đang chọn
-                b.setBackground(new Color(0, 120, 215));
-                b.setForeground(Color.WHITE);
-
-                //Cập nhật suất chiếu hiện tại
-                suatChieu = sc;
-
-                //Cập nhật lại label "Suất: ..."
-                if (lblSuat != null) {
-                    lblSuat.setText("Suất: " + suatChieu.getGioChieu());
-                }
-            });
-
-            p.add(b);
-        }
-
-        return p;
     }
 
     private JPanel createSeatArea() {
@@ -376,7 +346,7 @@ public class GiaoDienChonGhe extends JFrame {
 
         btnBack.addActionListener(e -> {
             dispose(); // đóng giao diện hiện tại
-            SwingUtilities.invokeLater(() -> new GiaoDienChonPhim(nhanVien).setVisible(true));
+            SwingUtilities.invokeLater(() -> new GiaoDienChonSuatChieu(phim, nhanVien).setVisible(true));
         });
 
         btnContinue.addActionListener(e -> {

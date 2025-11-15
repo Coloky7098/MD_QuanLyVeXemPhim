@@ -7,6 +7,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
+import ConnectDB.ConnectDB;
 import Entity.PhongChieu;
 
 public class PhongChieuDAO {
@@ -55,5 +56,40 @@ public class PhongChieuDAO {
 	        e.printStackTrace();
 	    }
 	    return phongChieu;
+	}
+	public boolean insertPhong(PhongChieu pc) {
+	    String sql = "INSERT INTO phong_chieu (tenPhong, soLuongGhe) VALUES (?, ?)";
+	    try (PreparedStatement ps = conn.prepareStatement(sql)) {
+	        ps.setString(1, pc.getTenPhong());
+	        ps.setInt(2, pc.getSoLuongGhe());
+	        return ps.executeUpdate() > 0;
+	    } catch (SQLException e) {
+	        e.printStackTrace();
+	        return false;
+	    }
+	}
+
+	public boolean updatePhong(PhongChieu pc) {
+	    String sql = "UPDATE phong_chieu SET tenPhong=?, soLuongGhe=? WHERE maPhongChieu=?";
+	    try (PreparedStatement ps = conn.prepareStatement(sql)) { 
+	        ps.setString(1, pc.getTenPhong());
+	        ps.setInt(2, pc.getSoLuongGhe());
+	        ps.setInt(3, pc.getMaPhongChieu());
+	        return ps.executeUpdate() > 0;
+	    } catch (SQLException e) {
+	        e.printStackTrace();
+	        return false;
+	    }
+	}
+
+	public boolean deletePhong(int maPhong) {
+	    String sql = "DELETE FROM phong_chieu WHERE maPhongChieu=?";
+	    try (PreparedStatement ps = conn.prepareStatement(sql)) { 
+	        ps.setInt(1, maPhong);
+	        return ps.executeUpdate() > 0;
+	    } catch (SQLException e) {
+	        e.printStackTrace();
+	        return false;
+	    }
 	}
 }
