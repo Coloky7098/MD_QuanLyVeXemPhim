@@ -12,6 +12,7 @@ import java.awt.*;
 import java.awt.event.*;
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 import DAO.ChiTietHoaDonDAO;
@@ -236,7 +237,9 @@ public class GiaoDienQuanLyKhachHang extends JFrame implements ActionListener {
         	ChiTietHoaDonDAO chiTietHoaDonDAO = new ChiTietHoaDonDAO(conn);
 			List<ChiTietHoaDon> listCTHD = chiTietHoaDonDAO.layChitiethoadon(hd.getMaHD());
 			modelHD.addRow(new Object[]{
-					hd.getMaHD(),hd.getNgayLapHoaDon(), hd.getKhachHang(), hd.getNhanVien()
+					hd.getMaHD(),
+					hd.getNgayLapHoaDon().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")),
+					hd.getKhachHang(), hd.getNhanVien()
 					, String.format("%,.0f đ", hd.tinhTong(listCTHD))
 			});
         }

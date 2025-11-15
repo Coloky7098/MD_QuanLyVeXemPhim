@@ -309,7 +309,7 @@ public class GiaoDienChonGhe extends JFrame {
         JLabel lblDoTuoi = new JLabel("Độ tuổi: " + doTuoi);
         lblDoTuoi.setAlignmentX(Component.LEFT_ALIGNMENT);
         p.add(lblDoTuoi);
-
+        
         if (thoiLuong > 0) {
             JLabel lblThoiLuong = new JLabel("Thời lượng: " + thoiLuong + " phút");
             lblThoiLuong.setAlignmentX(Component.LEFT_ALIGNMENT);

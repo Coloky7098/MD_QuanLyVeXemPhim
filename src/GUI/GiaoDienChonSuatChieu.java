@@ -252,6 +252,12 @@ public class GiaoDienChonSuatChieu extends JFrame {
         lbl2D.setFont(infoFont);
         lbl2D.setAlignmentX(Component.LEFT_ALIGNMENT);
         infoPanel.add(lbl2D);
+        
+        JLabel lblMoTa = new JLabel("<html>" + phim.getMoTa() + "</html>");
+        lblMoTa.setAlignmentX(Component.LEFT_ALIGNMENT);
+        lblMoTa.setMaximumSize(new Dimension(800, 300));
+        infoPanel.add(lblMoTa);
+
         infoPanel.add(Box.createRigidArea(new Dimension(0, 6)));
         infoPanel.add(showtimesPanel);
         card.add(infoPanel, BorderLayout.CENTER);

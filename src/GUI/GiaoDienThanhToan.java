@@ -36,7 +36,7 @@ import Entity.Ve;
 
 public class GiaoDienThanhToan extends JFrame implements ActionListener{
 	private static final long serialVersionUID = 1L;
-	JPanel pNorth, pWest, pCen, pnlTamTinh;
+	JPanel pWest, pCen, pnlTamTinh;
 	JSplitPane spnCen;
 	JLabel lblThanhToan, lblThongTinVe, lblThongTinKH, lblBapNuoc, lblThongBaoKM;
 	JTextField txtTenKH, txtSDT, txtBap, txtNuoc, txtKM;
@@ -82,11 +82,6 @@ public class GiaoDienThanhToan extends JFrame implements ActionListener{
 		this.setJMenuBar(menuBar);
 		MenuToggleUtil.addToggleSupport(this, menuBar);
 		
-		
-		pNorth = new JPanel();
-		lblThanhToan = new JLabel("Thanh toán");
-		pNorth.add(lblThanhToan);
-		
 		pWest = createInfoPanel();
 		
 		pCen = panelThanhToan();
@@ -95,7 +90,6 @@ public class GiaoDienThanhToan extends JFrame implements ActionListener{
 		spnCen = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, pWest, pCen);
 		spnCen.setDividerLocation(400); 
 		
-		add(pNorth, BorderLayout.NORTH);
 		add(spnCen, BorderLayout.CENTER);
 		
 		setDefaultCloseOperation(EXIT_ON_CLOSE);

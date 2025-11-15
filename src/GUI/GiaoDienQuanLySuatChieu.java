@@ -40,7 +40,9 @@ public class GiaoDienQuanLySuatChieu extends JPanel{
 	private JButton btnDateSelected;
 	private JButton btnSuatChieuSelected; 
 	private java.util.Map<Phim, JPanel> phimToShowtimes = new java.util.HashMap<>();
-	
+    
+	private static final Color ORANGE_DARK = new Color(199, 91, 18);
+
 	private static final Color PRI_COLOR = new Color(252, 247, 223);
     private static final Color SEC_COLOR = new Color(253, 252, 241);
     private static final Color RED_COLOR = new Color(212, 54, 37);
@@ -197,15 +199,15 @@ public class GiaoDienQuanLySuatChieu extends JPanel{
 
         JButton firstButton = null;
         for (String d : uniqueDates) {
-            JButton btn = new JButton(d);
-            btn.setFocusPainted(false);
-            btn.setBackground(SEC_COLOR);
+            JButton btn = taoBtn(d);
+        	btn.setPreferredSize(new Dimension(150, 40));
+        	btn.setFont(new Font("Segoe UI", Font.BOLD, 12));
             btn.addActionListener(e -> {
                 selectedDate = d;
                 // Reset màu cũ
-                if (btnDateSelected != null) btnDateSelected.setBackground(SEC_COLOR);
+                if (btnDateSelected != null) btnDateSelected.setBackground(RED_COLOR);
                 // Set màu mới
-                btn.setBackground(Color.YELLOW);
+                btn.setBackground(ORANGE_DARK);
                 btnDateSelected = btn;
 
                 updateAllShowtimes();
@@ -226,14 +228,13 @@ public class GiaoDienQuanLySuatChieu extends JPanel{
             List<SuatChieu> scList = suatChieuDAO.getAllSuatChieu(p.getMaPhim());
             for (SuatChieu sc : scList) {
                 if (sc.getNgayChieu().toString().equals(selectedDate)) {
-                    JButton btnSC = new JButton(sc.getGioChieu().toString());
-                    btnSC.setBackground(SEC_COLOR);
+                    JButton btnSC = taoBtn(sc.getGioChieu().toString());
                     btnSC.addActionListener(ev -> {
                         loadSelectedSuatChieuToForm(sc);
                         // Reset màu nút cũ
-                        if (btnSuatChieuSelected != null) btnSuatChieuSelected.setBackground(SEC_COLOR);
+                        if (btnSuatChieuSelected != null) btnSuatChieuSelected.setBackground(RED_COLOR);
                         // Highlight nút hiện tại
-                        btnSC.setBackground(Color.YELLOW);
+                        btnSC.setBackground(ORANGE_DARK);
                         btnSuatChieuSelected = btnSC;
                     });
                     showtimes.add(btnSC);
