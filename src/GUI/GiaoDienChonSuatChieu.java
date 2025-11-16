@@ -51,9 +51,9 @@ public class GiaoDienChonSuatChieu extends JFrame {
 
     private void addCenter() {
         panelCenterMain = new JPanel();
-        panelCenterMain.setBackground(new Color(252,247,223));
+        panelCenterMain.setBackground(SEC_COLOR);
         panelCenterMain.setLayout(new BoxLayout(panelCenterMain, BoxLayout.Y_AXIS));
-
+        panelCenterMain.setBorder(new EmptyBorder(10, 10, 10, 10));
         JScrollPane scroll = new JScrollPane(panelCenterMain);
         scroll.getVerticalScrollBar().setUnitIncrement(8);
 
@@ -63,6 +63,7 @@ public class GiaoDienChonSuatChieu extends JFrame {
     private void addSouth() {
         JPanel south = new JPanel(new FlowLayout(FlowLayout.RIGHT, 10, 8));
         south.setBackground(new Color(252,247,223));
+        south.setBorder(new EmptyBorder(10, 10, 10, 10));
         btnQuayLai = taoBtn("Quay lại");
         btnQuayLai.setBackground(RED_COLOR);
         btnQuayLai.setForeground(BTN_COLOR);
